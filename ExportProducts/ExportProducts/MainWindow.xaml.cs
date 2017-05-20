@@ -39,14 +39,27 @@ namespace ExportProducts
         public MainWindow()
         {
             InitializeComponent();
-
+            WindowStartupLocation = WindowStartupLocation.CenterScreen; 
+            productsBox.Items.Clear();
+            productsBox.SelectedIndex = productsBox.Items.Add("-- Selecione la Base de Datos --");
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["SqlServer"].ConnectionString.ToString()))
+            {
+                SqlCommand cmd = new SqlCommand("SELECT DescripcionCorta FROM VI_prueba_art ORDER BY DescripcionCorta;", conn);
+                conn.Open();
+                using (SqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        productsBox.Items.Add(rdr[0].ToString());
+                    }
+                }
+            }
         }
 
         public void btnInsert_Click(object sender, RoutedEventArgs e)
         {
             ProductFactory pf = new ProductFactory(BaseUrl, Account, Password);
             //product a = pf.Get(3084);
-
             product b = createProduct();
             try
             {
@@ -61,8 +74,6 @@ namespace ExportProducts
                     writer.WriteLine(Environment.NewLine + "-----------------------------------------------------------------------------" + Environment.NewLine);
                 }
             }
-            
-
         }
 
         public product createProduct()
