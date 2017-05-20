@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ExportProducts"
         mc:Ignorable="d"
-        Title="MainWindow" Height="740" Width="600">
+        Title="MainWindow" Height="720" Width="600">
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="125*" />
@@ -40,7 +40,7 @@
             <RowDefinition Height="25*" />
         </Grid.RowDefinitions>
         <Label Grid.Row="0" VerticalAlignment="Center">OdaCash</Label>
-        <ComboBox Grid.Column="1" Grid.ColumnSpan="2" Name="productsBox"></ComboBox>
+        <ComboBox Grid.Column="1" Grid.ColumnSpan="2" Name="productsBox" SelectionChanged="productsBox_SelectionChanged"></ComboBox>
         <Label Grid.Row="2" VerticalAlignment="Center">Nombre</Label>
         <TextBox Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="1" Name="name"/>
         <Label Grid.Row="4" VerticalAlignment="Center">Activado</Label>
@@ -55,13 +55,11 @@
         <Label Grid.Row="16" VerticalAlignment="Center">Categoria</Label>
         <ComboBox Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="2" Name="categoryBox"></ComboBox>
         <Label Grid.Row="18" VerticalAlignment="Center">Fabricante</Label>
-        <ComboBox Grid.Row="18" Grid.Column="1" Grid.ColumnSpan="2" Name="manufacturer"></ComboBox>
+        <ComboBox Grid.Row="18" Grid.Column="1" Grid.ColumnSpan="2" Name="manufacturerBox"></ComboBox>
         <Label Grid.Row="20" VerticalAlignment="Center">Texto con Stock</Label>
         <TextBox Grid.Row="20" Grid.Column="1" Grid.ColumnSpan="2" Name="textStock"/>
         <Label Grid.Row="22" VerticalAlignment="Center">Texto sin Stock</Label>
         <TextBox Grid.Row="22" Grid.Column="1" Grid.ColumnSpan="2" Name="textNoStock"/>
-        
-
-        <Button Grid.Row="26" Grid.ColumnSpan="2" x:Name="btnInsertMB" Click="btnInsert_Click" Content="Insertar"/>
+        <Button Grid.Row="26" Grid.ColumnSpan="3" x:Name="btnInsertMB" Click="btnInsert_Click" Content="Insertar"/>
     </Grid>
 </Window>

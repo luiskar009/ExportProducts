@@ -35,13 +35,15 @@ namespace ExportProducts
         private string BaseUrl = ConfigurationManager.AppSettings["baseUrl"].ToString();
         private string Account = ConfigurationManager.AppSettings["accProduct"].ToString();
         private string Password = "";
+        private int idOdacash = 0;
+        private int stock = 0;
 
         public MainWindow()
         {
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterScreen; 
             productsBox.Items.Clear();
-            productsBox.SelectedIndex = productsBox.Items.Add("-- Selecione la Base de Datos --");
+            productsBox.SelectedIndex = productsBox.Items.Add("-- Selecione el producto de Odacash --");
             using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["SqlServer"].ConnectionString.ToString()))
             {
                 SqlCommand cmd = new SqlCommand("SELECT DescripcionCorta FROM VI_prueba_art ORDER BY DescripcionCorta;", conn);
@@ -54,6 +56,56 @@ namespace ExportProducts
                     }
                 }
             }
+            categoryBox.Items.Clear();
+            categoryBox.SelectedIndex = categoryBox.Items.Add("-- Selecione la Categoria de Prestashop --");
+            manufacturerBox.Items.Clear();
+            manufacturerBox.SelectedIndex = manufacturerBox.Items.Add("-- Selecione el Fabricante de Prestashop --");
+            using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
+            {
+                MySqlCommand cmd = new MySqlCommand("SELECT DISTINCT name FROM ps_category_lang WHERE id_shop = '1' AND id_category <> '1'", conn);
+                conn.Open();
+                using (MySqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        categoryBox.Items.Add(rdr[0].ToString());
+                    }
+                }
+                MySqlCommand cmd2 = new MySqlCommand("SELECT name FROM ps_manufacturer", conn);
+                using (MySqlDataReader rdr = cmd2.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        manufacturerBox.Items.Add(rdr[0].ToString());
+                    }
+                }
+            }   
+        }
+
+        protected void productsBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (productsBox.SelectedItem.ToString() == "-- Selecione el producto de Odacash --")
+                return;
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["SqlServer"].ConnectionString.ToString()))
+            {
+                SqlCommand cmd = new SqlCommand($"SELECT Articulo FROM VI_prueba_art WHERE DescripcionCorta = '{productsBox.SelectedItem.ToString()}';", conn);
+                conn.Open();
+                using (SqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    rdr.Read();
+                    idOdacash = Int32.Parse(rdr[0].ToString());
+                }
+                SqlCommand cmd2 = new SqlCommand($"SELECT UnidadesStock, ImporteStockSIva FROM ocartacp WHERE Articulo = '{idOdacash}';", conn);
+                using (SqlDataReader rdr = cmd2.ExecuteReader())
+                {
+                    rdr.Read();
+                    price.Text = rdr["ImporteStockSIva"].ToString();
+                    stock = Int32.Parse(rdr["UnidadesStock"].ToString());
+                }
+            }
+            name.Text = productsBox.SelectedItem.ToString();
+            textStock.Text = "ENVIO 48-72H";
+            textNoStock.Text = "ENVIO 2 SEMANAS";
         }
 
         public void btnInsert_Click(object sender, RoutedEventArgs e)
@@ -74,20 +126,34 @@ namespace ExportProducts
                     writer.WriteLine(Environment.NewLine + "-----------------------------------------------------------------------------" + Environment.NewLine);
                 }
             }
+            finally
+            {
+                manufacturerBox.SelectedIndex = 0;
+                name.Text = "";
+                price.Text = "";
+                categoryBox.SelectedIndex = 0;
+                manufacturerBox.SelectedIndex = 0;
+                textStock.Text = "";
+                textNoStock.Text = "";
+            }
+
         }
 
         public product createProduct()
         {
             product prod = new product();
-            prod.active = 1;
+            if(yes.IsChecked == true)
+                prod.active = 1;
+            if(no.IsChecked == true)
+                prod.active = 0;
             //prod.additional_shipping_cost = (Decimal)0.00;
             prod.advanced_stock_management = 0;
-            prod.associations.categories.Add(createAuxcategory(2));
+            prod.associations.categories.Add(createAuxcategory(getCategoryID(categoryBox.SelectedItem.ToString())));
             prod.associations.stock_availables.Add(createAuxStockAvailable());
             prod.available_date = "0000-00-00";
             prod.available_for_order = 1;
-            prod.available_later.Add(createAuxLanguage(""));
-            prod.available_now.Add(createAuxLanguage(""));
+            prod.available_later.Add(createAuxLanguage(textNoStock.Text));
+            prod.available_now.Add(createAuxLanguage(textStock.Text));
             prod.cache_default_attribute = 0;
             prod.cache_has_attachments = 0;
             prod.cache_is_pack = 0;
@@ -96,8 +162,10 @@ namespace ExportProducts
             prod.date_add = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
             prod.date_upd = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
             //prod.depth = (Decimal)0.000000;
-            prod.description.Add(createAuxLanguage(""));
-            prod.description_short.Add(createAuxLanguage(""));
+            TextRange textRangeLarge = new TextRange(largeDesc.Document.ContentStart, largeDesc.Document.ContentEnd);
+            prod.description.Add(createAuxLanguage(textRangeLarge.Text));
+            TextRange textRangeShort = new TextRange(shortDesc.Document.ContentStart, shortDesc.Document.ContentEnd);
+            prod.description_short.Add(createAuxLanguage(textRangeShort.Text));
             prod.ean13 = "";
             //prod.ecotax = (Decimal)0.000000;
             //prod.height = (Decimal)0.000000;
@@ -105,23 +173,23 @@ namespace ExportProducts
             prod.id_category_default = 2;
             prod.id_default_combination = null;
             prod.id_default_image = null;
-            prod.id_manufacturer = 0;
+            prod.id_manufacturer = getManufacturerID(manufacturerBox.SelectedItem.ToString());
             prod.id_product_redirected = 0;
             prod.id_shop_default = 1;
             prod.id_supplier = 0;
             prod.id_tax_rules_group = 1;
             prod.indexed = 1;
             prod.is_virtual = 0;
-            prod.link_rewrite.Add(createAuxLanguage("prueba-1"));
+            prod.link_rewrite.Add(createAuxLanguage((name.Text.ToLower().Replace(" ","-"))));
             prod.location = "";
             prod.meta_description.Add(createAuxLanguage(""));
             prod.meta_keywords.Add(createAuxLanguage(""));
             prod.meta_title.Add(createAuxLanguage(""));
             prod.minimal_quantity = 1;
-            prod.name.Add(createAuxLanguage("Prueba 1"));
+            prod.name.Add(createAuxLanguage(name.Text));
             prod.on_sale = 0;
             prod.online_only = 0;
-            prod.price = (Decimal)16.528926;
+            prod.price = Decimal.Parse(price.Text);
             prod.quantity_discount = 0;
             prod.redirect_type = "404";
             prod.reference = "";
@@ -178,6 +246,38 @@ namespace ExportProducts
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
             {
                 MySqlCommand cmd = new MySqlCommand("SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'rosamaria_shop2' AND TABLE_NAME = 'ps_product'; ", conn);
+                conn.Open();
+                using (MySqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    rdr.Read();
+                    id = Int32.Parse(rdr[0].ToString());
+                }
+            }
+            return id;
+        }
+
+        public int getCategoryID(string category)
+        {
+            int id = 2;
+            using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
+            {
+                MySqlCommand cmd = new MySqlCommand($"SELECT DISTINCT id_category FROM ps_category_lang WHERE name = '{category}'; ", conn);
+                conn.Open();
+                using (MySqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    rdr.Read();
+                    id = Int32.Parse(rdr[0].ToString());
+                }
+            }
+            return id;
+        }
+
+        public int getManufacturerID(string manufacturer)
+        {
+            int id = 2;
+            using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
+            {
+                MySqlCommand cmd = new MySqlCommand($"SELECT DISTINCT id_manufacturer FROM ps_manufacturer WHERE name = '{manufacturer}'; ", conn);
                 conn.Open();
                 using (MySqlDataReader rdr = cmd.ExecuteReader())
                 {
