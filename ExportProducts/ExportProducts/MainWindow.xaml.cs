@@ -28,15 +28,13 @@ namespace ExportProducts
     /// Lógica de interacción para MainWindow.xaml
     /// </summary>
 
-
-
     public partial class MainWindow : Window
     {
         private string BaseUrl = ConfigurationManager.AppSettings["baseUrl"].ToString();
         private string Account = ConfigurationManager.AppSettings["accProduct"].ToString();
         private string Password = "";
         private int idOdacash = 0;
-        private int stock = 0;
+        private int idPrestashop = 0;
 
         public MainWindow()
         {
@@ -95,12 +93,11 @@ namespace ExportProducts
                     rdr.Read();
                     idOdacash = Int32.Parse(rdr[0].ToString());
                 }
-                SqlCommand cmd2 = new SqlCommand($"SELECT UnidadesStock, ImporteStockSIva FROM ocartacp WHERE Articulo = '{idOdacash}';", conn);
+                SqlCommand cmd2 = new SqlCommand($"SELECT ImporteStockSIva FROM ocartacp WHERE Articulo = '{idOdacash}';", conn);
                 using (SqlDataReader rdr = cmd2.ExecuteReader())
                 {
                     rdr.Read();
                     price.Text = rdr["ImporteStockSIva"].ToString();
-                    stock = Int32.Parse(rdr["UnidadesStock"].ToString());
                 }
             }
             name.Text = productsBox.SelectedItem.ToString();
@@ -116,6 +113,7 @@ namespace ExportProducts
             try
             {
                 pf.Add(b);
+                insertInventory();
             }
             catch(Exception ex)
             {
@@ -136,7 +134,6 @@ namespace ExportProducts
                 textStock.Text = "";
                 textNoStock.Text = "";
             }
-
         }
 
         public product createProduct()
@@ -169,7 +166,6 @@ namespace ExportProducts
             prod.ean13 = "";
             //prod.ecotax = (Decimal)0.000000;
             //prod.height = (Decimal)0.000000;
-            prod.id = getID();
             prod.id_category_default = 2;
             prod.id_default_combination = null;
             prod.id_default_image = null;
@@ -242,7 +238,6 @@ namespace ExportProducts
 
         public int getID()
         {
-            int id = 0;
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
             {
                 MySqlCommand cmd = new MySqlCommand("SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'rosamaria_shop2' AND TABLE_NAME = 'ps_product'; ", conn);
@@ -250,10 +245,10 @@ namespace ExportProducts
                 using (MySqlDataReader rdr = cmd.ExecuteReader())
                 {
                     rdr.Read();
-                    id = Int32.Parse(rdr[0].ToString());
+                    idPrestashop = Int32.Parse(rdr[0].ToString());
                 }
             }
-            return id;
+            return idPrestashop;
         }
 
         public int getCategoryID(string category)
@@ -286,6 +281,16 @@ namespace ExportProducts
                 }
             }
             return id;
+        }
+
+        public void insertInventory()
+        {
+            using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString))
+            {
+                MySqlCommand cmd = new MySqlCommand($"INSERT INTO InventarioTablas (Producto, id_product, id_product_attribute, Articulo) VALUES ('{name.Text}', '{idPrestashop}', '0', '{idOdacash}')", conn);
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
         }
     }
 }
