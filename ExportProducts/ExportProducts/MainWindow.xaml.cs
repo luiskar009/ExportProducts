@@ -34,7 +34,7 @@ namespace ExportProducts
         public MainWindow()
         {
             InitializeComponent();
-            WindowStartupLocation = WindowStartupLocation.CenterScreen; 
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
             productsBox.Items.Clear();
             productsBox.SelectedIndex = productsBox.Items.Add("-- Selecione el producto de Odacash --");
             using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["SqlServer"].ConnectionString.ToString()))
@@ -72,7 +72,7 @@ namespace ExportProducts
                         manufacturerBox.Items.Add(rdr[0].ToString());
                     }
                 }
-            }   
+            }
         }
 
         protected void productsBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -86,9 +86,9 @@ namespace ExportProducts
                 using (SqlDataReader rdr = cmd.ExecuteReader())
                 {
                     rdr.Read();
-                    ConfigurationManager.AppSettings["idOdacash"] = rdr[0].ToString();
+                    idOdacash.Text = rdr[0].ToString();
                 }
-                SqlCommand cmd2 = new SqlCommand($"SELECT PrecioSalida FROM ocarttap WHERE Articulo = '{ConfigurationManager.AppSettings["idOdacash"].ToString()}';", conn);
+                SqlCommand cmd2 = new SqlCommand($"SELECT PrecioSalida FROM ocarttap WHERE Articulo = '{idOdacash.Text}';", conn);
                 using (SqlDataReader rdr = cmd2.ExecuteReader())
                 {
                     rdr.Read();
@@ -109,7 +109,7 @@ namespace ExportProducts
                 pf.Add(newProd);
                 insertInventory();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 using (StreamWriter writer = new StreamWriter($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\error.txt", true))
                 {
@@ -133,9 +133,9 @@ namespace ExportProducts
         public product createProduct()
         {
             product prod = new product();
-            if(yes.IsChecked == true)
+            if (yes.IsChecked == true)
                 prod.active = 1;
-            if(no.IsChecked == true)
+            if (no.IsChecked == true)
                 prod.active = 0;
             //prod.additional_shipping_cost = (Decimal)0.00;
             prod.advanced_stock_management = 0;
@@ -165,7 +165,7 @@ namespace ExportProducts
             prod.id_category_default = 2;
             prod.id_default_combination = null;
             prod.id_default_image = null;
-            if(manufacturerBox.SelectedItem.ToString() != "-- Selecione el Fabricante de Prestashop --")
+            if (manufacturerBox.SelectedItem.ToString() != "-- Selecione el Fabricante de Prestashop --")
                 prod.id_manufacturer = getManufacturerID(manufacturerBox.SelectedItem.ToString());
             prod.id_product_redirected = 0;
             prod.id_shop_default = 1;
@@ -173,7 +173,7 @@ namespace ExportProducts
             prod.id_tax_rules_group = 1;
             prod.indexed = 1;
             prod.is_virtual = 0;
-            prod.link_rewrite.Add(createAuxLanguage((name.Text.ToLower().Replace(" ","-"))));
+            prod.link_rewrite.Add(createAuxLanguage((name.Text.ToLower().Replace(" ", "-"))));
             prod.location = "";
             prod.meta_description.Add(createAuxLanguage(""));
             prod.meta_keywords.Add(createAuxLanguage(""));
@@ -182,7 +182,7 @@ namespace ExportProducts
             prod.name.Add(createAuxLanguage(name.Text));
             prod.on_sale = 0;
             prod.online_only = 0;
-            prod.price = Decimal.Round((Decimal.Parse(price.Text) / (Decimal)1.21), 6); 
+            prod.price = Decimal.Round((Decimal.Parse(price.Text) / (Decimal)1.21), 6);
             prod.quantity_discount = 0;
             prod.redirect_type = "404";
             prod.reference = "";
@@ -285,9 +285,7 @@ namespace ExportProducts
             string Producto = name.Text;
             string id_product = ConfigurationManager.AppSettings["idPrestashop"].ToString();
             string id_product_attribute = "0";
-            string Articulo = ConfigurationManager.AppSettings["idOdacash"].ToString();
-
-
+            string Articulo = idOdacash.Text;
 
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString))
             {
@@ -295,6 +293,37 @@ namespace ExportProducts
                 conn.Open();
                 cmd.ExecuteNonQuery();
             }
+        }
+
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            Keyboard.ClearFocus();
+        }
+
+        private void idOdacash_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (idOdacash.Text == "")
+                return;
+            string articulo = "";
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["SqlServer"].ConnectionString))
+            {
+                SqlCommand cmd = new SqlCommand($"SELECT DescripcionCorta FROM VI_prueba_art WHERE Articulo = '{idOdacash.Text}'", conn);
+                conn.Open();
+                using (SqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    rdr.Read();
+                    if (rdr.HasRows)
+                        articulo = rdr[0].ToString();
+                    else
+                    {
+                        name.Clear();
+                        price.Clear();
+                        productsBox.SelectedIndex = 1;
+                        return;
+                    }
+                }
+            }
+            productsBox.SelectedIndex = productsBox.Items.IndexOf(articulo);
         }
     }
 }
