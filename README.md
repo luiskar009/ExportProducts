@@ -1,2 +1,2 @@
-# InsertInventory
-WPF program to insert into a specific database table
+# ExportProducts
+WPF program to export products from Odacash to Prestashop
