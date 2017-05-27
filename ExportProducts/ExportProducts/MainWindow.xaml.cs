@@ -30,11 +30,6 @@ namespace ExportProducts
 
     public partial class MainWindow : Window
     {
-        private string BaseUrl = ConfigurationManager.AppSettings["baseUrl"].ToString();
-        private string Account = ConfigurationManager.AppSettings["accProduct"].ToString();
-        private string Password = "";
-        private int idOdacash = 0;
-        private int idPrestashop = 0;
 
         public MainWindow()
         {
@@ -91,9 +86,9 @@ namespace ExportProducts
                 using (SqlDataReader rdr = cmd.ExecuteReader())
                 {
                     rdr.Read();
-                    idOdacash = Int32.Parse(rdr[0].ToString());
+                    ConfigurationManager.AppSettings["idOdacash"] = rdr[0].ToString();
                 }
-                SqlCommand cmd2 = new SqlCommand($"SELECT ImporteStockSIva FROM ocartacp WHERE Articulo = '{idOdacash}';", conn);
+                SqlCommand cmd2 = new SqlCommand($"SELECT ImporteStockSIva FROM ocartacp WHERE Articulo = '{ConfigurationManager.AppSettings["idOdacash"].ToString()}';", conn);
                 using (SqlDataReader rdr = cmd2.ExecuteReader())
                 {
                     rdr.Read();
@@ -107,7 +102,7 @@ namespace ExportProducts
 
         public void btnInsert_Click(object sender, RoutedEventArgs e)
         {
-            ProductFactory pf = new ProductFactory(BaseUrl, Account, Password);
+            ProductFactory pf = new ProductFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accProduct"].ToString(), "");
             //product a = pf.Get(3084);
             product b = createProduct();
             try
@@ -166,6 +161,7 @@ namespace ExportProducts
             prod.ean13 = "";
             //prod.ecotax = (Decimal)0.000000;
             //prod.height = (Decimal)0.000000;
+            prod.id = getID();
             prod.id_category_default = 2;
             prod.id_default_combination = null;
             prod.id_default_image = null;
@@ -245,10 +241,10 @@ namespace ExportProducts
                 using (MySqlDataReader rdr = cmd.ExecuteReader())
                 {
                     rdr.Read();
-                    idPrestashop = Int32.Parse(rdr[0].ToString());
+                    ConfigurationManager.AppSettings["idPrestashop"] = rdr[0].ToString();
                 }
             }
-            return idPrestashop;
+            return Int32.Parse(ConfigurationManager.AppSettings["idPrestashop"].ToString());
         }
 
         public int getCategoryID(string category)
@@ -285,9 +281,16 @@ namespace ExportProducts
 
         public void insertInventory()
         {
+            string Producto = name.Text;
+            string id_product = ConfigurationManager.AppSettings["idPrestashop"].ToString();
+            string id_product_attribute = "0";
+            string Articulo = ConfigurationManager.AppSettings["idOdacash"].ToString();
+
+
+
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString))
             {
-                MySqlCommand cmd = new MySqlCommand($"INSERT INTO InventarioTablas (Producto, id_product, id_product_attribute, Articulo) VALUES ('{name.Text}', '{idPrestashop}', '0', '{idOdacash}')", conn);
+                MySqlCommand cmd = new MySqlCommand($"INSERT INTO InventarioTablas (Producto, id_product, id_product_attribute, Articulo) VALUES ('{Producto}', '{id_product}', '{id_product_attribute}', '{Articulo}')", conn);
                 conn.Open();
                 cmd.ExecuteNonQuery();
             }
