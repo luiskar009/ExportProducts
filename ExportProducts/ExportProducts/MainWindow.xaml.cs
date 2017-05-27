@@ -88,11 +88,11 @@ namespace ExportProducts
                     rdr.Read();
                     ConfigurationManager.AppSettings["idOdacash"] = rdr[0].ToString();
                 }
-                SqlCommand cmd2 = new SqlCommand($"SELECT ImporteStockSIva FROM ocartacp WHERE Articulo = '{ConfigurationManager.AppSettings["idOdacash"].ToString()}';", conn);
+                SqlCommand cmd2 = new SqlCommand($"SELECT PrecioSalida FROM ocarttap WHERE Articulo = '{ConfigurationManager.AppSettings["idOdacash"].ToString()}';", conn);
                 using (SqlDataReader rdr = cmd2.ExecuteReader())
                 {
                     rdr.Read();
-                    price.Text = rdr["ImporteStockSIva"].ToString();
+                    price.Text = rdr["PrecioSalida"].ToString();
                 }
             }
             name.Text = productsBox.SelectedItem.ToString();
@@ -103,11 +103,10 @@ namespace ExportProducts
         public void btnInsert_Click(object sender, RoutedEventArgs e)
         {
             ProductFactory pf = new ProductFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accProduct"].ToString(), "");
-            //product a = pf.Get(3084);
-            product b = createProduct();
+            product newProd = createProduct();
             try
             {
-                pf.Add(b);
+                pf.Add(newProd);
                 insertInventory();
             }
             catch(Exception ex)
@@ -140,7 +139,8 @@ namespace ExportProducts
                 prod.active = 0;
             //prod.additional_shipping_cost = (Decimal)0.00;
             prod.advanced_stock_management = 0;
-            prod.associations.categories.Add(createAuxcategory(getCategoryID(categoryBox.SelectedItem.ToString())));
+            if (categoryBox.SelectedItem.ToString() != "-- Selecione la Categoria de Prestashop --")
+                prod.associations.categories.Add(createAuxcategory(getCategoryID(categoryBox.SelectedItem.ToString())));
             prod.associations.stock_availables.Add(createAuxStockAvailable());
             prod.available_date = "0000-00-00";
             prod.available_for_order = 1;
@@ -165,7 +165,8 @@ namespace ExportProducts
             prod.id_category_default = 2;
             prod.id_default_combination = null;
             prod.id_default_image = null;
-            prod.id_manufacturer = getManufacturerID(manufacturerBox.SelectedItem.ToString());
+            if(manufacturerBox.SelectedItem.ToString() != "-- Selecione el Fabricante de Prestashop --")
+                prod.id_manufacturer = getManufacturerID(manufacturerBox.SelectedItem.ToString());
             prod.id_product_redirected = 0;
             prod.id_shop_default = 1;
             prod.id_supplier = 0;
@@ -181,7 +182,7 @@ namespace ExportProducts
             prod.name.Add(createAuxLanguage(name.Text));
             prod.on_sale = 0;
             prod.online_only = 0;
-            prod.price = Decimal.Parse(price.Text);
+            prod.price = Decimal.Round((Decimal.Parse(price.Text) / (Decimal)1.21), 6); 
             prod.quantity_discount = 0;
             prod.redirect_type = "404";
             prod.reference = "";

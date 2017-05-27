@@ -50,7 +50,7 @@
         <RichTextBox Grid.Row="6" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="2" Name="shortDesc"/>
         <Label Grid.Row="10" VerticalAlignment="Center">Descripcion Larga</Label>
         <RichTextBox Grid.Row="10" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="2" Name="largeDesc"/>
-        <Label Grid.Row="14" VerticalAlignment="Center">Precio (sin IVA)</Label>
+        <Label Grid.Row="14" VerticalAlignment="Center">Precio</Label>
         <TextBox Grid.Row="14" Grid.Column="1" Grid.ColumnSpan="2" Name="price"/>
         <Label Grid.Row="16" VerticalAlignment="Center">Categoria</Label>
         <ComboBox Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="2" Name="categoryBox"></ComboBox>
