@@ -95,6 +95,16 @@ namespace ExportProducts
             return prod;
         }
 
+        public static combination createCombination(int id_product, string att1, string att2, string att3)
+        {
+            combination comb = new combination();
+            comb.id_product = id_product;
+            //comb.associations.product_option_values.Add();
+
+
+            return comb;
+        }
+
         public static Bukimedia.PrestaSharp.Entities.AuxEntities.language createAuxLanguage(string message)
         {
             Bukimedia.PrestaSharp.Entities.AuxEntities.language auxLang = new Bukimedia.PrestaSharp.Entities.AuxEntities.language();

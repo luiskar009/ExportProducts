@@ -55,7 +55,7 @@ namespace ExportProducts
 
         protected void CreateCombinationBtn_Click(object sender, RoutedEventArgs e)
         {
-            ExportOdacash cc = new ExportOdacash();
+            CreateCombination cc = new CreateCombination();
             cc.Show();
             cc.Owner = this;
         }
