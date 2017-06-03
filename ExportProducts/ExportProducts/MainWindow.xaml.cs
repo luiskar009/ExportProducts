@@ -20,6 +20,7 @@ using System.Data;
 using System.IO;
 using Bukimedia.PrestaSharp.Factories;
 using Bukimedia.PrestaSharp.Entities;
+using System.Windows.Forms;
 
 
 namespace ExportProducts
@@ -51,8 +52,10 @@ namespace ExportProducts
             }
             categoryBox.Items.Clear();
             categoryBox.SelectedIndex = categoryBox.Items.Add("-- Selecione la Categoria de Prestashop --");
+            categoryBox2.SelectedIndex = categoryBox2.Items.Add("-- Selecione la Categoria de Prestashop --");
             manufacturerBox.Items.Clear();
             manufacturerBox.SelectedIndex = manufacturerBox.Items.Add("-- Selecione el Fabricante de Prestashop --");
+            manufacturerBox2.SelectedIndex = manufacturerBox2.Items.Add("-- Selecione el Fabricante de Prestashop --");
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
             {
                 MySqlCommand cmd = new MySqlCommand("SELECT DISTINCT name FROM ps_category_lang WHERE id_shop = '1' AND id_category <> '1'", conn);
@@ -62,6 +65,7 @@ namespace ExportProducts
                     while (rdr.Read())
                     {
                         categoryBox.Items.Add(rdr[0].ToString());
+                        categoryBox2.Items.Add(rdr[0].ToString());
                     }
                 }
                 MySqlCommand cmd2 = new MySqlCommand("SELECT name FROM ps_manufacturer", conn);
@@ -70,6 +74,7 @@ namespace ExportProducts
                     while (rdr.Read())
                     {
                         manufacturerBox.Items.Add(rdr[0].ToString());
+                        manufacturerBox2.Items.Add(rdr[0].ToString());
                     }
                 }
             }
@@ -104,24 +109,24 @@ namespace ExportProducts
         {
             if (productsBox.SelectedItem.ToString() == "-- Selecione el producto de Odacash --")
             {
-                MessageBox.Show("Elija un producto", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+                System.Windows.MessageBox.Show("Elija un producto", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
                 return;
             }
 
             ProductFactory pf = new ProductFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accProduct"].ToString(), "");
+            ImageFactory imf = new ImageFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accImages"].ToString(), "");
             product newProd = importProduct();
-            //ImageFactory imf = new ImageFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accImages"].ToString(), "");
 
             try
             {
                 pf.Add(newProd);
+                if (boxImg.Text != "")
+                    imf.AddProductImage((long)newProd.id, boxImg2.Text);
                 insertInventory();
-                //string image = @"C:\test.jpg";
-                //imf.AddProductImage((long)newProd.id, image);
             }
             catch (Exception ex)
             {
-                using (StreamWriter writer = new StreamWriter($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\error.txt", true))
+                using (StreamWriter writer = new StreamWriter($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\ExportProducts.txt", true))
                 {
                     writer.WriteLine("Message :" + ex.Message + "<br/>" + Environment.NewLine + "StackTrace :" + ex.StackTrace +
                        "" + Environment.NewLine + "Date :" + DateTime.Now.ToString());
@@ -142,14 +147,13 @@ namespace ExportProducts
         public void btnInsert_Click2(object sender, RoutedEventArgs e)
         {
             ProductFactory pf = new ProductFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accProduct"].ToString(), "");
+            ImageFactory imf = new ImageFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accImages"].ToString(), "");
             product newProd = createProduct();
-            //ImageFactory imf = new ImageFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accImages"].ToString(), "");
-
             try
             {
                 pf.Add(newProd);
-                //string image = @"C:\test.jpg";
-                //imf.AddProductImage((long)newProd.id, image);
+                if (boxImg2.Text != "")
+                    imf.AddProductImage((long)newProd.id, boxImg2.Text);
             }
             catch (Exception ex)
             {
@@ -168,6 +172,35 @@ namespace ExportProducts
                 manufacturerBox2.SelectedIndex = 0;
                 textStock2.Text = "";
                 textNoStock2.Text = "";
+            }
+        }
+
+        public void btnOpenFile_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Abre la ventana para buscar el archivo
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.ShowDialog();
+
+                // Guarda la ruta del archivo
+                string path = ofd.FileName;
+
+                // Si el archivo es .sql lo guarda 
+                if ((path.Contains(".jpg")) || (path.Contains(".jpeg")) || (path.Contains(".png")) || (path.Contains(".gif")))
+                    boxImg2.Text = path;
+
+                // Si no muestra por pantalla el error y termina
+                else
+                {
+                    System.Windows.MessageBox.Show("La imagen debe ser .jpg, .jpeg, .png o .gif", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
+                    return;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
             }
         }
 
@@ -266,9 +299,9 @@ namespace ExportProducts
             prod.date_add = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
             prod.date_upd = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
             //prod.depth = (Decimal)0.000000;
-            TextRange textRangeLarge = new TextRange(largeDesc2.Document.ContentStart, largeDesc.Document.ContentEnd);
+            TextRange textRangeLarge = new TextRange(largeDesc2.Document.ContentStart, largeDesc2.Document.ContentEnd);
             prod.description.Add(createAuxLanguage(textRangeLarge.Text));
-            TextRange textRangeShort = new TextRange(shortDesc2.Document.ContentStart, shortDesc.Document.ContentEnd);
+            TextRange textRangeShort = new TextRange(shortDesc2.Document.ContentStart, shortDesc2.Document.ContentEnd);
             prod.description_short.Add(createAuxLanguage(textRangeShort.Text));
             prod.ean13 = "";
             //prod.ecotax = (Decimal)0.000000;

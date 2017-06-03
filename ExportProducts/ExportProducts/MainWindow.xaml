@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ExportProducts"
         mc:Ignorable="d"
-        Title="MainWindow" Height="748" Width="600">
+        Title="MainWindow" Height="776" Width="600">
     <TabControl>
         <TabItem Header="Importar Producto">
             <Grid Margin="10">
@@ -15,6 +15,8 @@
                     <ColumnDefinition Width="224*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
                     <RowDefinition Height="20*" />
                     <RowDefinition Height="8*" />
                     <RowDefinition Height="20*" />
@@ -66,6 +68,8 @@
                 <TextBox Grid.Row="22" Grid.Column="1" Grid.ColumnSpan="2" VerticalContentAlignment="Center" Name="textStock"/>
                 <Label Grid.Row="24" VerticalAlignment="Center">Texto sin Stock</Label>
                 <TextBox Grid.Row="24" Grid.Column="1" Grid.ColumnSpan="2" VerticalContentAlignment="Center" Name="textNoStock"/>
+                <TextBox Grid.Row="26" Grid.Column="0" Grid.ColumnSpan="2" Name="boxImg"/>
+                <Button Grid.Row="26" Grid.Column="3" x:Name="btnOpenFile" Click="btnOpenFile_Click" Content="Seleccione Imagen"/>
                 <Button Grid.Row="28" Grid.ColumnSpan="3" x:Name="btnInsertMB" Click="btnInsert_Click" Content="Insertar"/>
             </Grid>
         </TabItem>
@@ -124,7 +128,9 @@
                 <TextBox Grid.Row="18" Grid.Column="1" Grid.ColumnSpan="2" VerticalContentAlignment="Center" Name="textStock2"/>
                 <Label Grid.Row="20" VerticalAlignment="Center">Texto sin Stock</Label>
                 <TextBox Grid.Row="20" Grid.Column="1" Grid.ColumnSpan="2" VerticalContentAlignment="Center" Name="textNoStock2"/>
-                <Button Grid.Row="28" Grid.ColumnSpan="3" x:Name="btnInsertMB2" Click="btnInsert_Click" Content="Insertar"/>
+                <TextBox Grid.Row="22" Grid.Column="0" Grid.ColumnSpan="2" Name="boxImg2"/>
+                <Button Grid.Row="22" Grid.Column="3" x:Name="btnOpenFile2" Click="btnOpenFile_Click" Content="Seleccione Imagen"/>
+                <Button Grid.Row="28" Grid.ColumnSpan="3" x:Name="btnInsertMB2" Click="btnInsert_Click2" Content="Insertar"/>
             </Grid>
         </TabItem>
     </TabControl>
