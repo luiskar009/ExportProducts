@@ -120,8 +120,13 @@ namespace ExportProducts
             try
             {
                 pf.Add(newProd);
-                if (boxImg.Text != "")
-                    imf.AddProductImage((long)newProd.id, boxImg2.Text);
+                if (imgBox.HasItems)
+                {
+                    for (int i = 0; imgBox.Items.Count > i; i++)
+                    {
+                        imf.AddProductImage((long)newProd.id, imgBox.Items[i].ToString());
+                    }
+                }
                 insertInventory();
             }
             catch (Exception ex)
@@ -141,6 +146,7 @@ namespace ExportProducts
                 manufacturerBox.SelectedIndex = 0;
                 textStock.Text = "";
                 textNoStock.Text = "";
+                imgBox.Items.Clear();
             }
         }
 
@@ -148,12 +154,20 @@ namespace ExportProducts
         {
             ProductFactory pf = new ProductFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accProduct"].ToString(), "");
             ImageFactory imf = new ImageFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accImages"].ToString(), "");
+
+            product a = pf.Get(2);
+
             product newProd = createProduct();
             try
             {
                 pf.Add(newProd);
-                if (boxImg2.Text != "")
-                    imf.AddProductImage((long)newProd.id, boxImg2.Text);
+                if (imgBox2.HasItems)
+                {
+                    for(int i = 0; imgBox2.Items.Count > i; i++)
+                    {
+                        imf.AddProductImage((long)newProd.id, imgBox2.Items[i].ToString());
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -172,6 +186,7 @@ namespace ExportProducts
                 manufacturerBox2.SelectedIndex = 0;
                 textStock2.Text = "";
                 textNoStock2.Text = "";
+                imgBox2.Items.Clear();
             }
         }
 
@@ -179,24 +194,43 @@ namespace ExportProducts
         {
             try
             {
+                imgBox.Items.Clear();
                 // Abre la ventana para buscar el archivo
                 OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "Imagenes(.jpg, .png, .gif)|*.jpg;*.png;*.gif|" + "Todos los ficheros |*.*";
+                ofd.Multiselect = true;
                 ofd.ShowDialog();
 
-                // Guarda la ruta del archivo
-                string path = ofd.FileName;
-
-                // Si el archivo es .sql lo guarda 
-                if ((path.Contains(".jpg")) || (path.Contains(".jpeg")) || (path.Contains(".png")) || (path.Contains(".gif")))
-                    boxImg2.Text = path;
-
-                // Si no muestra por pantalla el error y termina
-                else
+                // Guarda la ruta de los archivos
+                for(int i = 0; ofd.FileNames.Length > i; i++)
                 {
-                    System.Windows.MessageBox.Show("La imagen debe ser .jpg, .jpeg, .png o .gif", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
-                    return;
+                    imgBox.Items.Add(ofd.FileNames[i]);
                 }
+                imgBox.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
+            }
+        }
 
+        public void btnOpenFile_Click2(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                imgBox2.Items.Clear();
+                // Abre la ventana para buscar el archivo
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "Imagenes(.jpg, .png, .gif)|*.jpg;*.png;*.gif|" + "Todos los ficheros |*.*";
+                ofd.Multiselect = true;
+                ofd.ShowDialog();
+
+                // Guarda la ruta de los archivos
+                for (int i = 0; ofd.FileNames.Length > i; i++)
+                {
+                    imgBox2.Items.Add(ofd.FileNames[i]);
+                }
+                imgBox2.SelectedIndex = 0;
             }
             catch (Exception ex)
             {
@@ -278,14 +312,14 @@ namespace ExportProducts
         public product createProduct()
         {
             product prod = new product();
-            if (yes.IsChecked == true)
+            if (yes2.IsChecked == true)
                 prod.active = 1;
-            if (no.IsChecked == true)
+            if (no2.IsChecked == true)
                 prod.active = 0;
             //prod.additional_shipping_cost = (Decimal)0.00;
             prod.advanced_stock_management = 0;
             if (categoryBox2.SelectedItem.ToString() != "-- Selecione la Categoria de Prestashop --")
-                prod.associations.categories.Add(createAuxcategory(getCategoryID(categoryBox.SelectedItem.ToString())));
+                prod.associations.categories.Add(createAuxcategory(getCategoryID(categoryBox2.SelectedItem.ToString())));
             prod.associations.stock_availables.Add(createAuxStockAvailable());
             prod.available_date = "0000-00-00";
             prod.available_for_order = 1;
@@ -310,7 +344,7 @@ namespace ExportProducts
             prod.id_category_default = 2;
             prod.id_default_combination = null;
             prod.id_default_image = null;
-            if (manufacturerBox.SelectedItem.ToString() != "-- Selecione el Fabricante de Prestashop --")
+            if (manufacturerBox2.SelectedItem.ToString() != "-- Selecione el Fabricante de Prestashop --")
                 prod.id_manufacturer = getManufacturerID(manufacturerBox2.SelectedItem.ToString());
             prod.id_product_redirected = 0;
             prod.id_shop_default = 1;
