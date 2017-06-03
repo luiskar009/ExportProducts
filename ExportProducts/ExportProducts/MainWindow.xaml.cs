@@ -59,5 +59,12 @@ namespace ExportProducts
             cc.Show();
             cc.Owner = this;
         }
+
+        protected void InsertInventoryBtn_Click(object sender, RoutedEventArgs e)
+        {
+            InsertInventory ii = new InsertInventory();
+            ii.Show();
+            ii.Owner = this;
+        }
     }
 }

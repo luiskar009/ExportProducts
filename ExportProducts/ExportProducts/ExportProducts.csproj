@@ -85,6 +85,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="InsertInventory.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -101,6 +105,9 @@
     </Compile>
     <Compile Include="ExportOdacash.xaml.cs">
       <DependentUpon>ExportOdacash.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="InsertInventory.xaml.cs">
+      <DependentUpon>InsertInventory.xaml</DependentUpon>
     </Compile>
     <Compile Include="Library.cs" />
     <Compile Include="MainWindow.xaml.cs">

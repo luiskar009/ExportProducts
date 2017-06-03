@@ -29,6 +29,7 @@
             <MenuItem Header="Exportar desde Odacash" Click="ExportOdacashBtn_Click"></MenuItem>
             <MenuItem Header="Crear Producto en Prestashop" Click="CreateProductBtn_Click"></MenuItem>
             <MenuItem Header="Crear Combinación" Click="CreateCombinationBtn_Click"></MenuItem>
+            <MenuItem Header="Enlazar Odacash" Click="InsertInventoryBtn_Click"></MenuItem>
         </Menu>
         <Image Visibility="Visible" Grid.Row="1" Grid.Column="0" Grid.RowSpan="6" Grid.ColumnSpan="4" HorizontalAlignment="Left" Source="C:\Users\portatil\Source\Repos\ExportProducts\ExportProducts\ExportProducts\mima.jpg"/>
     </Grid>

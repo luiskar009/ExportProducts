@@ -1,0 +1,97 @@
+﻿<Window x:Class="ExportProducts.InsertInventory"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ExportProducts"
+        mc:Ignorable="d"
+        Title="InsertInventory" Height="250" Width="600" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+    <TabControl>
+        <TabItem Header="Mima Bebes">
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="125*" />
+                    <ColumnDefinition Width="447*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="25*" />
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0">Producto</Label>
+                <TextBox  Grid.Column="2" Name="boxProductoMB"/>
+                <Label Grid.Row="2">id product</Label>
+                <TextBox Grid.Row="2" Grid.Column="1" Name="boxIdProductMB"/>
+                <Label Grid.Row="4">id product atributte</Label>
+                <TextBox Grid.Row="4" Grid.Column="1" Name="boxAttributeMB"/>
+                <Label Grid.Row="6">Articulo</Label>
+                <TextBox Grid.Row="6" Grid.Column="1" Name="boxArticuloMB"/>
+                <Button Grid.Row="8" Grid.ColumnSpan="2" x:Name="btnInsertMB" Click="btnInsertMB_Click" Content="Insertar Fila"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Todo Para Bebés">
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="125*" />
+                    <ColumnDefinition Width="447*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="25*" />
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0">Producto</Label>
+                <TextBox  Grid.Column="2" Name="boxProductoTPB"/>
+                <Label Grid.Row="2">id product</Label>
+                <TextBox Grid.Row="2" Grid.Column="1" Name="boxIdProductTPB"/>
+                <Label Grid.Row="4">id product atributte</Label>
+                <TextBox Grid.Row="4" Grid.Column="1" Name="boxAttributeTPB"/>
+                <Label Grid.Row="6">Articulo</Label>
+                <TextBox Grid.Row="6" Grid.Column="1" Name="boxArticuloTPB"/>
+                <Button Grid.Row="8" Grid.ColumnSpan="2" x:Name="btnInsertTPB" Click="btnInsertTPB_Click" Content="Insertar Fila"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Editar">
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="125*" />
+                    <ColumnDefinition Width="223*" />
+                    <ColumnDefinition Width="223*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="25*" />
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" VerticalAlignment="Center">Producto</Label>
+                <ComboBox Grid.Column="1" Grid.ColumnSpan="2" Name="ProductCombo" VerticalAlignment="Center"></ComboBox>
+                <Label Grid.Row="2" VerticalAlignment="Center">Tienda</Label>
+                <RadioButton Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Name="MB">Mima Bebes</RadioButton>
+                <RadioButton Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Name="TPB">Todo para Bebes</RadioButton>
+                <Label Grid.Row="4" VerticalAlignment="Center">id product</Label>
+                <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Name="boxIdProductEdit"/>
+                <Label Grid.Row="6" VerticalAlignment="Center">id product atributte</Label>
+                <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Name="boxAttributeEdit"/>
+                <Button Grid.Row="8" Grid.ColumnSpan="3" x:Name="btnInsertEdit" Click="btnInsertEdit_Click" Content="Insertar Fila"/>
+            </Grid>
+        </TabItem>
+    </TabControl>
+</Window>
