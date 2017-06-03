@@ -6,64 +6,126 @@
         xmlns:local="clr-namespace:ExportProducts"
         mc:Ignorable="d"
         Title="MainWindow" Height="748" Width="600">
-    <Grid Name="grid" Margin="10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="125*" />
-            <ColumnDefinition Width="224*" />
-            <ColumnDefinition Width="224*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="25*" />
-        </Grid.RowDefinitions>
-        <Label Grid.Row="0" VerticalAlignment="Center">OdaCash</Label>
-        <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Name="productsBox" SelectionChanged="productsBox_SelectionChanged"></ComboBox>
-        <Label Grid.Row="2" VerticalAlignment="Center">ID Articulo</Label>
-        <TextBox Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="1" LostKeyboardFocus="idOdacash_LostKeyboardFocus" Name="idOdacash"/>
-        <Label Grid.Row="4" VerticalAlignment="Center">Nombre</Label>
-        <TextBox Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="1" Name="name"/>
-        <Label Grid.Row="6" VerticalAlignment="Center">Activado</Label>
-        <RadioButton Grid.Column="1" Grid.Row="6" VerticalAlignment="Center" Name="yes">Si</RadioButton>
-        <RadioButton Grid.Column="2" Grid.Row="6" VerticalAlignment="Center" Name="no">No</RadioButton>
-        <Label Grid.Row="8" VerticalAlignment="Center">Descripcion Corta</Label>
-        <RichTextBox Grid.Row="8" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="2" Name="shortDesc"/>
-        <Label Grid.Row="12" VerticalAlignment="Center">Descripcion Larga</Label>
-        <RichTextBox Grid.Row="12" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="2" Name="largeDesc"/>
-        <Label Grid.Row="16" VerticalAlignment="Center">Precio</Label>
-        <TextBox Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="2" Name="price"/>
-        <Label Grid.Row="18" VerticalAlignment="Center">Categoria</Label>
-        <ComboBox Grid.Row="18" Grid.Column="1" Grid.ColumnSpan="2" Name="categoryBox"></ComboBox>
-        <Label Grid.Row="20" VerticalAlignment="Center">Fabricante</Label>
-        <ComboBox Grid.Row="20" Grid.Column="1" Grid.ColumnSpan="2" Name="manufacturerBox"></ComboBox>
-        <Label Grid.Row="22" VerticalAlignment="Center">Texto con Stock</Label>
-        <TextBox Grid.Row="22" Grid.Column="1" Grid.ColumnSpan="2" Name="textStock"/>
-        <Label Grid.Row="24" VerticalAlignment="Center">Texto sin Stock</Label>
-        <TextBox Grid.Row="24" Grid.Column="1" Grid.ColumnSpan="2" Name="textNoStock"/>
-        <Button Grid.Row="28" Grid.ColumnSpan="3" x:Name="btnInsertMB" Click="btnInsert_Click" Content="Insertar"/>
-    </Grid>
+    <TabControl>
+        <TabItem Header="Importar Producto">
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="125*" />
+                    <ColumnDefinition Width="224*" />
+                    <ColumnDefinition Width="224*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="25*" />
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" VerticalAlignment="Center">OdaCash</Label>
+                <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Name="productsBox" SelectionChanged="productsBox_SelectionChanged"></ComboBox>
+                <Label Grid.Row="2" VerticalAlignment="Center">ID Articulo</Label>
+                <TextBox Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="1" LostKeyboardFocus="idOdacash_LostKeyboardFocus" VerticalContentAlignment="Center" Name="idOdacash"/>
+                <Label Grid.Row="4" VerticalAlignment="Center">Nombre</Label>
+                <TextBox Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="1" VerticalContentAlignment="Center" Name="name"/>
+                <Label Grid.Row="6" VerticalAlignment="Center">Activado</Label>
+                <RadioButton Grid.Column="1" Grid.Row="6" VerticalAlignment="Center" Name="yes">Si</RadioButton>
+                <RadioButton Grid.Column="2" Grid.Row="6" VerticalAlignment="Center" Name="no">No</RadioButton>
+                <Label Grid.Row="8" VerticalAlignment="Center">Descripcion Corta</Label>
+                <RichTextBox Grid.Row="8" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="2" Name="shortDesc"/>
+                <Label Grid.Row="12" VerticalAlignment="Center">Descripcion Larga</Label>
+                <RichTextBox Grid.Row="12" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="2" Name="largeDesc"/>
+                <Label Grid.Row="16" VerticalAlignment="Center">Precio</Label>
+                <TextBox Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="2" VerticalContentAlignment="Center" Name="price"/>
+                <Label Grid.Row="18" VerticalAlignment="Center">Categoria</Label>
+                <ComboBox Grid.Row="18" Grid.Column="1" Grid.ColumnSpan="2" Name="categoryBox"></ComboBox>
+                <Label Grid.Row="20" VerticalAlignment="Center">Fabricante</Label>
+                <ComboBox Grid.Row="20" Grid.Column="1" Grid.ColumnSpan="2" Name="manufacturerBox"></ComboBox>
+                <Label Grid.Row="22" VerticalAlignment="Center">Texto con Stock</Label>
+                <TextBox Grid.Row="22" Grid.Column="1" Grid.ColumnSpan="2" VerticalContentAlignment="Center" Name="textStock"/>
+                <Label Grid.Row="24" VerticalAlignment="Center">Texto sin Stock</Label>
+                <TextBox Grid.Row="24" Grid.Column="1" Grid.ColumnSpan="2" VerticalContentAlignment="Center" Name="textNoStock"/>
+                <Button Grid.Row="28" Grid.ColumnSpan="3" x:Name="btnInsertMB" Click="btnInsert_Click" Content="Insertar"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Crear Producto">
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="125*" />
+                    <ColumnDefinition Width="224*" />
+                    <ColumnDefinition Width="224*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="25*" />
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" VerticalAlignment="Center">Nombre</Label>
+                <TextBox Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="1" VerticalContentAlignment="Center" Name="name2"/>
+                <Label Grid.Row="2" VerticalAlignment="Center">Activado</Label>
+                <RadioButton Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Name="yes2">Si</RadioButton>
+                <RadioButton Grid.Column="2" Grid.Row="2" VerticalAlignment="Center" Name="no2">No</RadioButton>
+                <Label Grid.Row="4" VerticalAlignment="Center">Descripcion Corta</Label>
+                <RichTextBox Grid.Row="4" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="2" Name="shortDesc2"/>
+                <Label Grid.Row="8" VerticalAlignment="Center">Descripcion Larga</Label>
+                <RichTextBox Grid.Row="8" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="2" Name="largeDesc2"/>
+                <Label Grid.Row="12" VerticalAlignment="Center">Precio</Label>
+                <TextBox Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="2" VerticalContentAlignment="Center" Name="price2"/>
+                <Label Grid.Row="14" VerticalAlignment="Center">Categoria</Label>
+                <ComboBox Grid.Row="14" Grid.Column="1" Grid.ColumnSpan="2" Name="categoryBox2"></ComboBox>
+                <Label Grid.Row="16" VerticalAlignment="Center">Fabricante</Label>
+                <ComboBox Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="2" Name="manufacturerBox2"></ComboBox>
+                <Label Grid.Row="18" VerticalAlignment="Center">Texto con Stock</Label>
+                <TextBox Grid.Row="18" Grid.Column="1" Grid.ColumnSpan="2" VerticalContentAlignment="Center" Name="textStock2"/>
+                <Label Grid.Row="20" VerticalAlignment="Center">Texto sin Stock</Label>
+                <TextBox Grid.Row="20" Grid.Column="1" Grid.ColumnSpan="2" VerticalContentAlignment="Center" Name="textNoStock2"/>
+                <Button Grid.Row="28" Grid.ColumnSpan="3" x:Name="btnInsertMB2" Click="btnInsert_Click" Content="Insertar"/>
+            </Grid>
+        </TabItem>
+    </TabControl>
 </Window>
