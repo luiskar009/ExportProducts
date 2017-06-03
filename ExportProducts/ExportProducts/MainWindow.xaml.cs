@@ -115,7 +115,11 @@ namespace ExportProducts
 
             ProductFactory pf = new ProductFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accProduct"].ToString(), "");
             ImageFactory imf = new ImageFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accImages"].ToString(), "");
-            product newProd = importProduct();
+
+            TextRange textRangeLarge = new TextRange(largeDesc.Document.ContentStart, largeDesc.Document.ContentEnd);
+            TextRange textRangeShort = new TextRange(shortDesc.Document.ContentStart, shortDesc.Document.ContentEnd);
+
+            product newProd = createProduct(name.Text, yes.IsChecked, textRangeShort.Text, textRangeLarge.Text, price.Text, categoryBox.SelectedItem.ToString(), manufacturerBox.SelectedItem.ToString(), textStock.Text, textNoStock.Text);
 
             try
             {
@@ -140,8 +144,12 @@ namespace ExportProducts
             }
             finally
             {
+                productsBox.SelectedIndex = 0;
+                idOdacash.Text = "";
                 name.Text = "";
                 price.Text = "";
+                shortDesc.Document.Blocks.Clear();
+                largeDesc.Document.Blocks.Clear();
                 categoryBox.SelectedIndex = 0;
                 manufacturerBox.SelectedIndex = 0;
                 textStock.Text = "";
@@ -157,7 +165,10 @@ namespace ExportProducts
 
             product a = pf.Get(2);
 
-            product newProd = createProduct();
+            TextRange textRangeLarge = new TextRange(largeDesc2.Document.ContentStart, largeDesc2.Document.ContentEnd);
+            TextRange textRangeShort = new TextRange(shortDesc2.Document.ContentStart, shortDesc2.Document.ContentEnd);
+
+            product newProd = createProduct(name2.Text, yes2.IsChecked, textRangeShort.Text, textRangeLarge.Text, price2.Text, categoryBox2.SelectedItem.ToString(), manufacturerBox2.SelectedItem.ToString(), textStock2.Text, textNoStock2.Text);
             try
             {
                 pf.Add(newProd);
@@ -182,6 +193,8 @@ namespace ExportProducts
             {
                 name2.Text = "";
                 price2.Text = "";
+                shortDesc.Document.Blocks.Clear();
+                largeDesc.Document.Blocks.Clear();
                 categoryBox2.SelectedIndex = 0;
                 manufacturerBox2.SelectedIndex = 0;
                 textStock2.Text = "";
@@ -238,22 +251,22 @@ namespace ExportProducts
             }
         }
 
-        public product importProduct()
+        public product createProduct(string name, bool? isChecked, string shortDesc, string largeDesc, string price, string category, string manufacturer, string stockDesc, string noStockDesc)
         {
             product prod = new product();
-            if (yes.IsChecked == true)
+            if (isChecked ?? true)
                 prod.active = 1;
-            if (no.IsChecked == true)
+            else
                 prod.active = 0;
             //prod.additional_shipping_cost = (Decimal)0.00;
             prod.advanced_stock_management = 0;
-            if (categoryBox.SelectedItem.ToString() != "-- Selecione la Categoria de Prestashop --")
-                prod.associations.categories.Add(createAuxcategory(getCategoryID(categoryBox.SelectedItem.ToString())));
+            if (category != "-- Selecione la Categoria de Prestashop --")
+                prod.associations.categories.Add(createAuxcategory(getCategoryID(category)));
             prod.associations.stock_availables.Add(createAuxStockAvailable());
             prod.available_date = "0000-00-00";
             prod.available_for_order = 1;
-            prod.available_later.Add(createAuxLanguage(textNoStock.Text));
-            prod.available_now.Add(createAuxLanguage(textStock.Text));
+            prod.available_later.Add(createAuxLanguage(noStockDesc));
+            prod.available_now.Add(createAuxLanguage(stockDesc));
             prod.cache_default_attribute = 0;
             prod.cache_has_attachments = 0;
             prod.cache_is_pack = 0;
@@ -262,10 +275,8 @@ namespace ExportProducts
             prod.date_add = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
             prod.date_upd = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
             //prod.depth = (Decimal)0.000000;
-            TextRange textRangeLarge = new TextRange(largeDesc.Document.ContentStart, largeDesc.Document.ContentEnd);
-            prod.description.Add(createAuxLanguage(textRangeLarge.Text));
-            TextRange textRangeShort = new TextRange(shortDesc.Document.ContentStart, shortDesc.Document.ContentEnd);
-            prod.description_short.Add(createAuxLanguage(textRangeShort.Text));
+            prod.description.Add(createAuxLanguage(largeDesc));
+            prod.description_short.Add(createAuxLanguage(shortDesc));
             prod.ean13 = "";
             //prod.ecotax = (Decimal)0.000000;
             //prod.height = (Decimal)0.000000;
@@ -273,95 +284,24 @@ namespace ExportProducts
             prod.id_category_default = 2;
             prod.id_default_combination = null;
             prod.id_default_image = null;
-            if (manufacturerBox.SelectedItem.ToString() != "-- Selecione el Fabricante de Prestashop --")
-                prod.id_manufacturer = getManufacturerID(manufacturerBox.SelectedItem.ToString());
+            if (manufacturer != "-- Selecione el Fabricante de Prestashop --")
+                prod.id_manufacturer = getManufacturerID(manufacturer);
             prod.id_product_redirected = 0;
             prod.id_shop_default = 1;
             prod.id_supplier = 0;
             prod.id_tax_rules_group = 1;
             prod.indexed = 1;
             prod.is_virtual = 0;
-            prod.link_rewrite.Add(createAuxLanguage((name.Text.ToLower().Replace(" ", "-"))));
+            prod.link_rewrite.Add(createAuxLanguage((name.ToLower().Replace(" ", "-"))));
             prod.location = "";
             prod.meta_description.Add(createAuxLanguage(""));
             prod.meta_keywords.Add(createAuxLanguage(""));
             prod.meta_title.Add(createAuxLanguage(""));
             prod.minimal_quantity = 1;
-            prod.name.Add(createAuxLanguage(name.Text));
+            prod.name.Add(createAuxLanguage(name));
             prod.on_sale = 0;
             prod.online_only = 0;
-            prod.price = Decimal.Round((Decimal.Parse(price.Text) / (Decimal)1.21), 6);
-            prod.quantity_discount = 0;
-            prod.redirect_type = "404";
-            prod.reference = "";
-            prod.show_price = 1;
-            prod.supplier_reference = "";
-            prod.text_fields = 0;
-            //prod.unit_price_ratio = (Decimal)0.000000;
-            prod.unity = "";
-            prod.upc = "";
-            prod.uploadable_files = 0;
-            prod.visibility = "both";
-            //prod.weight = (Decimal)0.000000;
-            //prod.wholesale_price = (Decimal)0.000000;
-            //prod.width = (Decimal)0.000000;
-
-            return prod;
-        }
-
-        public product createProduct()
-        {
-            product prod = new product();
-            if (yes2.IsChecked == true)
-                prod.active = 1;
-            if (no2.IsChecked == true)
-                prod.active = 0;
-            //prod.additional_shipping_cost = (Decimal)0.00;
-            prod.advanced_stock_management = 0;
-            if (categoryBox2.SelectedItem.ToString() != "-- Selecione la Categoria de Prestashop --")
-                prod.associations.categories.Add(createAuxcategory(getCategoryID(categoryBox2.SelectedItem.ToString())));
-            prod.associations.stock_availables.Add(createAuxStockAvailable());
-            prod.available_date = "0000-00-00";
-            prod.available_for_order = 1;
-            prod.available_later.Add(createAuxLanguage(textNoStock2.Text));
-            prod.available_now.Add(createAuxLanguage(textStock2.Text));
-            prod.cache_default_attribute = 0;
-            prod.cache_has_attachments = 0;
-            prod.cache_is_pack = 0;
-            prod.condition = "new";
-            prod.customizable = 0;
-            prod.date_add = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
-            prod.date_upd = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
-            //prod.depth = (Decimal)0.000000;
-            TextRange textRangeLarge = new TextRange(largeDesc2.Document.ContentStart, largeDesc2.Document.ContentEnd);
-            prod.description.Add(createAuxLanguage(textRangeLarge.Text));
-            TextRange textRangeShort = new TextRange(shortDesc2.Document.ContentStart, shortDesc2.Document.ContentEnd);
-            prod.description_short.Add(createAuxLanguage(textRangeShort.Text));
-            prod.ean13 = "";
-            //prod.ecotax = (Decimal)0.000000;
-            //prod.height = (Decimal)0.000000;
-            prod.id = getID();
-            prod.id_category_default = 2;
-            prod.id_default_combination = null;
-            prod.id_default_image = null;
-            if (manufacturerBox2.SelectedItem.ToString() != "-- Selecione el Fabricante de Prestashop --")
-                prod.id_manufacturer = getManufacturerID(manufacturerBox2.SelectedItem.ToString());
-            prod.id_product_redirected = 0;
-            prod.id_shop_default = 1;
-            prod.id_supplier = 0;
-            prod.id_tax_rules_group = 1;
-            prod.indexed = 1;
-            prod.is_virtual = 0;
-            prod.link_rewrite.Add(createAuxLanguage((name2.Text.ToLower().Replace(" ", "-"))));
-            prod.location = "";
-            prod.meta_description.Add(createAuxLanguage(""));
-            prod.meta_keywords.Add(createAuxLanguage(""));
-            prod.meta_title.Add(createAuxLanguage(""));
-            prod.minimal_quantity = 1;
-            prod.name.Add(createAuxLanguage(name2.Text));
-            prod.on_sale = 0;
-            prod.online_only = 0;
-            prod.price = Decimal.Round((Decimal.Parse(price2.Text) / (Decimal)1.21), 6);
+            prod.price = Decimal.Round((Decimal.Parse(price) / (Decimal)1.21), 6);
             prod.quantity_discount = 0;
             prod.redirect_type = "404";
             prod.reference = "";

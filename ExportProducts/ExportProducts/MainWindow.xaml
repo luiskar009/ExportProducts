@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ExportProducts"
         mc:Ignorable="d"
-        Title="MainWindow" Height="776" Width="600">
+        Title="MainWindow" Height="776" Width="600" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
     <TabControl>
         <TabItem Header="Importar Producto">
             <Grid Margin="10">
