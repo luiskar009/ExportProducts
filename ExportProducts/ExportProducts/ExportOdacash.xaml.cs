@@ -73,6 +73,12 @@ namespace ExportProducts
             }
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                                                                         
+        ///         Updates the Prestashop ID when change the selected product in the comboBox         ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
         protected void productsBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (productsBox.SelectedItem.ToString() == "-- Selecione el producto de Odacash --")
@@ -98,8 +104,15 @@ namespace ExportProducts
             textNoStock.Text = "ENVIO 2 SEMANAS";
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                                                                         
+        ///            Event click to create a Prestashop Product from an Odacash Product              ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
         public void btnInsert_Click(object sender, RoutedEventArgs e)
         {
+            // If no product is selected inform the user a terminates the execution
             if (productsBox.SelectedItem.ToString() == "-- Selecione el producto de Odacash --")
             {
                 System.Windows.MessageBox.Show("Elija un producto", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
@@ -108,15 +121,17 @@ namespace ExportProducts
 
             ProductFactory pf = new ProductFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accProduct"].ToString(), "");
             ImageFactory imf = new ImageFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accImages"].ToString(), "");
-
             TextRange textRangeLarge = new TextRange(largeDesc.Document.ContentStart, largeDesc.Document.ContentEnd);
             TextRange textRangeShort = new TextRange(shortDesc.Document.ContentStart, shortDesc.Document.ContentEnd);
 
-            product newProd = Library.createProduct(name.Text, yes.IsChecked, textRangeShort.Text, textRangeLarge.Text, price.Text, categoryBox.SelectedItem.ToString(), manufacturerBox.SelectedItem.ToString(), textStock.Text, textNoStock.Text);
-
             try
             {
+                // Create a Product
+                product newProd = Library.createProduct(name.Text, yes.IsChecked, textRangeShort.Text, textRangeLarge.Text, price.Text, categoryBox.SelectedItem.ToString(), manufacturerBox.SelectedItem.ToString(), textStock.Text, textNoStock.Text);
+                // Add the product to the web
                 pf.Add(newProd);
+
+                // If the product have images add it too.
                 if (imgBox.HasItems)
                 {
                     for (int i = 0; imgBox.Items.Count > i; i++)
@@ -124,19 +139,24 @@ namespace ExportProducts
                         imf.AddProductImage((long)newProd.id, imgBox.Items[i].ToString());
                     }
                 }
+
+                // Create a link to sync the stock between Odacash and Prestashop
                 Library.insertInventory(name.Text, ConfigurationManager.AppSettings["idPrestashop"].ToString(), "0", idOdacash.Text);
             }
             catch (Exception ex)
             {
-                using (StreamWriter writer = new StreamWriter($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\ExportProducts.txt", true))
+                // Display errors in a txt and alert the user with a messageBox
+                using (StreamWriter writer = new StreamWriter($@"C:\ExportProduct\ExportProducts.txt", true))
                 {
                     writer.WriteLine("Message :" + ex.Message + "<br/>" + Environment.NewLine + "StackTrace :" + ex.StackTrace +
                        "" + Environment.NewLine + "Date :" + DateTime.Now.ToString());
                     writer.WriteLine(Environment.NewLine + "-----------------------------------------------------------------------------" + Environment.NewLine);
+                    System.Windows.MessageBox.Show("Se ha pruducido un error.Puede ver el contenido del mismo en el log del programa", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
                 }
             }
             finally
             {
+                // Restart the fields when the executions ends
                 productsBox.SelectedIndex = 0;
                 idOdacash.Text = "";
                 name.Text = "";
@@ -151,18 +171,24 @@ namespace ExportProducts
             }
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                                                                         
+        ///                   Click event to display a window to look for images                       ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
         public void btnOpenFile_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 imgBox.Items.Clear();
-                // Abre la ventana para buscar el archivo
+                // Open a window to look for a image
                 OpenFileDialog ofd = new OpenFileDialog();
                 ofd.Filter = "Imagenes(.jpg, .png, .gif)|*.jpg;*.png;*.gif|" + "Todos los ficheros |*.*";
                 ofd.Multiselect = true;
                 ofd.ShowDialog();
 
-                // Guarda la ruta de los archivos
+                // Save the path of the images
                 for (int i = 0; ofd.FileNames.Length > i; i++)
                 {
                     imgBox.Items.Add(ofd.FileNames[i]);
@@ -175,16 +201,31 @@ namespace ExportProducts
             }
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                               
+        ///                         Event to change focus when click outside                           ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             Keyboard.ClearFocus();
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                               
+        ///              Event tu update the Odacash comboBox when TextBox lost focus                  ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
         private void idOdacash_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
+            // If the textBox is empty do nothing
             if (idOdacash.Text == "")
                 return;
             string articulo = "";
+
+            // Look for the product name for the id inserted in the textbox
             using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["SqlServer"].ConnectionString))
             {
                 SqlCommand cmd = new SqlCommand($"SELECT DescripcionCorta FROM VI_prueba_art WHERE Articulo = '{idOdacash.Text}'", conn);
@@ -192,8 +233,11 @@ namespace ExportProducts
                 using (SqlDataReader rdr = cmd.ExecuteReader())
                 {
                     rdr.Read();
+                    // If the products exist save the name
                     if (rdr.HasRows)
                         articulo = rdr[0].ToString();
+
+                    // If not exist select the index and finish the execution
                     else
                     {
                         name.Clear();
@@ -203,6 +247,7 @@ namespace ExportProducts
                     }
                 }
             }
+            // Update the comboBox item selection with the product name
             productsBox.SelectedIndex = productsBox.Items.IndexOf(articulo);
         }
     }
