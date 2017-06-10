@@ -32,10 +32,11 @@ namespace ExportProducts
         public CreateProduct()
         {
             InitializeComponent();
-            categoryBox.Items.Clear();
+            // Inicialized the comboBoxs
             categoryBox.SelectedIndex = categoryBox.Items.Add("-- Selecione la Categoria de Prestashop --");
-            manufacturerBox.Items.Clear();
             manufacturerBox.SelectedIndex = manufacturerBox.Items.Add("-- Selecione el Fabricante de Prestashop --");
+
+            // Fill the comboBox with products and manufacturers
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
             {
                 MySqlCommand cmd = new MySqlCommand("SELECT DISTINCT name FROM ps_category_lang WHERE id_shop = '1' AND id_category <> '1'", conn);
@@ -58,20 +59,28 @@ namespace ExportProducts
             }
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                               
+        ///                             Click event to Create a Product                                ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
         public void btnInsert_Click(object sender, RoutedEventArgs e)
         {
             ProductFactory pf = new ProductFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accProduct"].ToString(), "");
             ImageFactory imf = new ImageFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accImages"].ToString(), "");
-
-            product a = pf.Get(2);
-
             TextRange textRangeLarge = new TextRange(largeDesc.Document.ContentStart, largeDesc.Document.ContentEnd);
             TextRange textRangeShort = new TextRange(shortDesc.Document.ContentStart, shortDesc.Document.ContentEnd);
 
-            product newProd = Library.createProduct(name.Text, yes.IsChecked, textRangeShort.Text, textRangeLarge.Text, price.Text, categoryBox.SelectedItem.ToString(), manufacturerBox.SelectedItem.ToString(), textStock.Text, textNoStock.Text);
             try
             {
+                // Create new product
+                product newProd = Library.createProduct(name.Text, yes.IsChecked, textRangeShort.Text, textRangeLarge.Text, price.Text, categoryBox.SelectedItem.ToString(), manufacturerBox.SelectedItem.ToString(), textStock.Text, textNoStock.Text);
+            
+                // Insert it to the web
                 pf.Add(newProd);
+
+                // If the product have images insert it too.
                 if (imgBox.HasItems)
                 {
                     for (int i = 0; imgBox.Items.Count > i; i++)
@@ -82,15 +91,18 @@ namespace ExportProducts
             }
             catch (Exception ex)
             {
-                using (StreamWriter writer = new StreamWriter($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\error.txt", true))
+                // Display errors in a txt and alert the user with a messageBox
+                using (StreamWriter writer = new StreamWriter($@"C:\ExportProduct\CreateProduct.txt", true))
                 {
                     writer.WriteLine("Message :" + ex.Message + "<br/>" + Environment.NewLine + "StackTrace :" + ex.StackTrace +
                        "" + Environment.NewLine + "Date :" + DateTime.Now.ToString());
                     writer.WriteLine(Environment.NewLine + "-----------------------------------------------------------------------------" + Environment.NewLine);
+                    System.Windows.MessageBox.Show("Se ha pruducido un error. Puede ver el contenido del mismo en el log del programa", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
                 }
             }
             finally
             {
+                // Restart the fields when the executions ends
                 name.Text = "";
                 price.Text = "";
                 shortDesc.Document.Blocks.Clear();
@@ -103,18 +115,24 @@ namespace ExportProducts
             }
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                               
+        ///                    Click event to display a window to look for images                      ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
         public void btnOpenFile_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 imgBox.Items.Clear();
-                // Abre la ventana para buscar el archivo
+                // Open a window to look for a image
                 OpenFileDialog ofd = new OpenFileDialog();
                 ofd.Filter = "Imagenes(.jpg, .png, .gif)|*.jpg;*.png;*.gif|" + "Todos los ficheros |*.*";
                 ofd.Multiselect = true;
                 ofd.ShowDialog();
 
-                // Guarda la ruta de los archivos
+                // Save the path of the images
                 for (int i = 0; ofd.FileNames.Length > i; i++)
                 {
                     imgBox.Items.Add(ofd.FileNames[i]);
