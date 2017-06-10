@@ -35,6 +35,7 @@ namespace ExportProducts
             InitializeComponent();
             productsBox.Items.Clear();
             productsBox.SelectedIndex = productsBox.Items.Add("-- Seleccione el producto de Prestashop --");
+            imageBox.SelectedIndex = imageBox.Items.Add("-- Seleccione una imagen --");
             attributeBox.SelectedIndex = attributeBox.Items.Add("-- Seleccione un atributo para la combinacion --");
             attributeBox2.SelectedIndex = attributeBox2.Items.Add("-- Seleccione un atributo para la combinacion --");
             attributeBox3.SelectedIndex = attributeBox3.Items.Add("-- Seleccione un atributo para la combinacion --");
@@ -75,14 +76,33 @@ namespace ExportProducts
                     rdr.Read();
                     idPrestashop.Text = rdr[0].ToString();
                 }
+                img.Source = null;
+                imageBox.Items.Clear();
+                imageBox.SelectedIndex = imageBox.Items.Add("-- Seleccione una imagen --");
+                ProductFactory pf = new ProductFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accProduct"].ToString(), "");
+                ImageFactory imf = new ImageFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accImages"].ToString(), "");
+                List<Bukimedia.PrestaSharp.Entities.FilterEntities.declination> imgIDs = imf.GetProductImages(Int64.Parse(idPrestashop.Text));
+                foreach(Bukimedia.PrestaSharp.Entities.FilterEntities.declination element in imgIDs)
+                {
+                    imageBox.Items.Add(element.id);
+                }
             }
+        }
+        protected void imageBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (imageBox.Items.Count == 0)
+                return;
+            if (imageBox.SelectedItem.ToString() == "-- Seleccione una imagen --")
+                return;
+            ImageFactory imf = new ImageFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accImages"].ToString(), "");
+            byte[] imgByte = imf.GetProductImage(Int64.Parse(idPrestashop.Text), Int64.Parse(imageBox.SelectedItem.ToString()));
+            img.Source = LoadImage(imgByte);
         }
 
         public void btnInsert_Click(object sender, RoutedEventArgs e)
         {
             CombinationFactory cf = new CombinationFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accCombination"].ToString(), "");
-            //List<combination> a = cf.GetAll();
-            combination newComb = createCombination(Int32.Parse(idPrestashop.Text), getAttributeID(attributeBox.SelectedItem.ToString()), getAttributeID(attributeBox2.SelectedItem.ToString()), getAttributeID(attributeBox3.SelectedItem.ToString()));
+            combination newComb = createCombination(Int32.Parse(idPrestashop.Text), getAttributeID(attributeBox.SelectedItem.ToString()), getAttributeID(attributeBox2.SelectedItem.ToString()), getAttributeID(attributeBox3.SelectedItem.ToString()), price.Text);
             try
             {
                 cf.Add(newComb);
@@ -103,6 +123,8 @@ namespace ExportProducts
                 attributeBox.SelectedIndex = 0;
                 attributeBox2.SelectedIndex = 0;
                 attributeBox3.SelectedIndex = 0;
+                price.Text = "";
+                img.Source = null;
             }
         }
 
@@ -136,6 +158,24 @@ namespace ExportProducts
             }
             productsBox.SelectedIndex = productsBox.Items.IndexOf(articulo);
         }
+        private static BitmapImage LoadImage(byte[] imageData)
+        {
+            if (imageData == null || imageData.Length == 0) return null;
+            var image = new BitmapImage();
+            using (var mem = new MemoryStream(imageData))
+            {
+                mem.Position = 0;
+                image.BeginInit();
+                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = null;
+                image.StreamSource = mem;
+                image.EndInit();
+            }
+            image.Freeze();
+            return image;
+        }
+
 
 
     }

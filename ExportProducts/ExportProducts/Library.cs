@@ -95,9 +95,10 @@ namespace ExportProducts
             return prod;
         }
 
-        public static combination createCombination(int id_product, int att1, int att2, int att3)
+        public static combination createCombination(int id_product, int att1, int att2, int att3, string price)
         {
             combination comb = new combination();
+
             if(att1 != 0)
             {
                 comb.associations.product_option_values.Add(createPOV(att1));
@@ -118,6 +119,7 @@ namespace ExportProducts
             comb.id_product = id_product;
             comb.location = "";
             comb.minimal_quantity = 1;
+            comb.price = Decimal.Round((Decimal.Parse(price) / (Decimal)1.21), 6);
             comb.reference = "";
             comb.supplier_reference = "";
             comb.upc = "";
