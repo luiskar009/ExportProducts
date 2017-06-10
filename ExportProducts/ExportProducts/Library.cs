@@ -95,13 +95,32 @@ namespace ExportProducts
             return prod;
         }
 
-        public static combination createCombination(int id_product, string att1, string att2, string att3)
+        public static combination createCombination(int id_product, int att1, int att2, int att3)
         {
             combination comb = new combination();
+            if(att1 != 0)
+            {
+                comb.associations.product_option_values.Add(createPOV(att1));
+            }
+            if(att2 != 0)
+            {
+                comb.associations.product_option_values.Add(createPOV(att2));
+            }
+            if(att3 != 0)
+            {
+                comb.associations.product_option_values.Add(createPOV(att3));
+            }
+            comb.available_date = "0000-00-00";
+            //comb.default_on = 1;
+            comb.ean13 = "";
+            //comb.ecotax = "";
+            comb.id = getIDComb();
             comb.id_product = id_product;
-            //comb.associations.product_option_values.Add();
-
-
+            comb.location = "";
+            comb.minimal_quantity = 1;
+            comb.reference = "";
+            comb.supplier_reference = "";
+            comb.upc = "";
             return comb;
         }
 
@@ -137,6 +156,14 @@ namespace ExportProducts
             return stockAva;
         }
 
+        public static Bukimedia.PrestaSharp.Entities.AuxEntities.product_option_value createPOV(int att)
+        {
+            Bukimedia.PrestaSharp.Entities.AuxEntities.product_option_value pov = new Bukimedia.PrestaSharp.Entities.AuxEntities.product_option_value();
+            pov.id = att;
+            return pov;
+        }
+
+
         public static int getID()
         {
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
@@ -152,9 +179,25 @@ namespace ExportProducts
             return Int32.Parse(ConfigurationManager.AppSettings["idPrestashop"].ToString());
         }
 
+        public static int getIDComb()
+        {
+            int id = 0;
+            using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
+            {
+                MySqlCommand cmd = new MySqlCommand("SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'rosamaria_shop2' AND TABLE_NAME = 'ps_product_attribute'; ", conn);
+                conn.Open();
+                using (MySqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    rdr.Read();
+                    id = Int32.Parse(rdr[0].ToString());
+                }
+            }
+            return id;
+        }
+
         public static int getCategoryID(string category)
         {
-            int id = 2;
+            int id = 0;
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
             {
                 MySqlCommand cmd = new MySqlCommand($"SELECT DISTINCT id_category FROM ps_category_lang WHERE name = '{category}'; ", conn);
@@ -170,7 +213,7 @@ namespace ExportProducts
 
         public static int getManufacturerID(string manufacturer)
         {
-            int id = 2;
+            int id = 0;
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
             {
                 MySqlCommand cmd = new MySqlCommand($"SELECT DISTINCT id_manufacturer FROM ps_manufacturer WHERE name = '{manufacturer}'; ", conn);
@@ -179,6 +222,25 @@ namespace ExportProducts
                 {
                     rdr.Read();
                     id = Int32.Parse(rdr[0].ToString());
+                }
+            }
+            return id;
+        }
+
+        public static int getAttributeID(string attribute)
+        {
+            int id = 0;
+            if (attribute != "-- Seleccione un atributo para la combinacion --")
+            {
+                using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
+                {
+                    conn.Open();
+                    MySqlCommand cmd = new MySqlCommand($"SELECT id_attribute FROM ps_attribute_lang WHERE NAME = '{attribute}'", conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        rdr.Read();
+                        id = Int32.Parse(rdr[0].ToString());
+                    }
                 }
             }
             return id;

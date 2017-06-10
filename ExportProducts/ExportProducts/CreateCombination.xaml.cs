@@ -21,7 +21,7 @@ using System.IO;
 using Bukimedia.PrestaSharp.Factories;
 using Bukimedia.PrestaSharp.Entities;
 using System.Windows.Forms;
-
+using static ExportProducts.Library;
 
 namespace ExportProducts
 {
@@ -34,10 +34,10 @@ namespace ExportProducts
         {
             InitializeComponent();
             productsBox.Items.Clear();
-            productsBox.SelectedIndex = productsBox.Items.Add("-- Selecione el producto de Prestashop --");
-            attributeBox.SelectedIndex = attributeBox.Items.Add("-- Selecione un atributo para la combinacion --");
-            attributeBox2.SelectedIndex = attributeBox2.Items.Add("-- Selecione un atributo para la combinacion --");
-            attributeBox3.SelectedIndex = attributeBox3.Items.Add("-- Selecione un atributo para la combinacion --");
+            productsBox.SelectedIndex = productsBox.Items.Add("-- Seleccione el producto de Prestashop --");
+            attributeBox.SelectedIndex = attributeBox.Items.Add("-- Seleccione un atributo para la combinacion --");
+            attributeBox2.SelectedIndex = attributeBox2.Items.Add("-- Seleccione un atributo para la combinacion --");
+            attributeBox3.SelectedIndex = attributeBox3.Items.Add("-- Seleccione un atributo para la combinacion --");
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
             {
                 MySqlCommand cmd = new MySqlCommand("SELECT name FROM ps_product_lang ORDER BY name", conn);
@@ -64,7 +64,7 @@ namespace ExportProducts
 
         protected void productsBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (productsBox.SelectedItem.ToString() == "-- Selecione el producto de Prestashop --")
+            if (productsBox.SelectedItem.ToString() == "-- Seleccione el producto de Prestashop --")
                 return;
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
             {
@@ -81,8 +81,8 @@ namespace ExportProducts
         public void btnInsert_Click(object sender, RoutedEventArgs e)
         {
             CombinationFactory cf = new CombinationFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accCombination"].ToString(), "");
-            List<combination> a = cf.GetAll();
-            //combination newComb = Library.createCombination(Int32.Parse(idPrestashop.Text),attributeBox.SelectedItem.ToString(),attributeBox2.SelectedItem.ToString(),attributeBox3.SelectedItem.ToString());
+            //List<combination> a = cf.GetAll();
+            combination newComb = createCombination(Int32.Parse(idPrestashop.Text), getAttributeID(attributeBox.SelectedItem.ToString()), getAttributeID(attributeBox2.SelectedItem.ToString()), getAttributeID(attributeBox3.SelectedItem.ToString()));
             try
             {
                 cf.Add(newComb);
@@ -104,7 +104,6 @@ namespace ExportProducts
                 attributeBox2.SelectedIndex = 0;
                 attributeBox3.SelectedIndex = 0;
             }
-
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
