@@ -33,12 +33,15 @@ namespace ExportProducts
         public CreateCombination()
         {
             InitializeComponent();
-            productsBox.Items.Clear();
+
+            // Initializes the comboBox
             productsBox.SelectedIndex = productsBox.Items.Add("-- Seleccione el producto de Prestashop --");
             imageBox.SelectedIndex = imageBox.Items.Add("-- Seleccione una imagen --");
             attributeBox.SelectedIndex = attributeBox.Items.Add("-- Seleccione un atributo para la combinacion --");
             attributeBox2.SelectedIndex = attributeBox2.Items.Add("-- Seleccione un atributo para la combinacion --");
             odacashBox.SelectedIndex = odacashBox.Items.Add("-- Seleccione un producto de Odacash--");
+
+            // Fill the comboBoxs with Prestashop products names and attribute names
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
             {
                 MySqlCommand cmd = new MySqlCommand("SELECT name FROM ps_product_lang ORDER BY name", conn);
@@ -60,6 +63,8 @@ namespace ExportProducts
                     }
                 }
             }
+
+            // Fill the comboBox with Odacash products
             using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["SqlServer"].ConnectionString.ToString()))
             {
                 SqlCommand cmd = new SqlCommand("SELECT DescripcionCorta FROM VI_prueba_art ORDER BY DescripcionCorta;", conn);
@@ -74,10 +79,20 @@ namespace ExportProducts
             }
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                               
+        ///                         Updates the Prestashop ID and images IDs                           ///
+        ///                     when change the selected product in the comboBox                       ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
         protected void productsBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // If no product is selected do nothing
             if (productsBox.SelectedItem.ToString() == "-- Seleccione el producto de Prestashop --")
                 return;
+
+            // Look for the product id in BBDD and update the value in the textBox
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
             {
                 MySqlCommand cmd = new MySqlCommand($"SELECT id_product FROM ps_product_lang WHERE name = '{productsBox.SelectedItem.ToString()}';", conn);
@@ -87,6 +102,8 @@ namespace ExportProducts
                     rdr.Read();
                     idPrestashop.Text = rdr[0].ToString();
                 }
+
+                // Update image comboBox with the selected product images ids
                 img.Source = null;
                 imageBox.Items.Clear();
                 imageBox.SelectedIndex = imageBox.Items.Add("-- Seleccione una imagen --");
@@ -100,10 +117,19 @@ namespace ExportProducts
             }
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                               
+        ///                 Update Odacash ID Textbox when chages the selected product                 ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
         protected void odacashBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // If no product is selected do nothing
             if (odacashBox.SelectedItem.ToString() == "-- Seleccione un producto de Odacash--")
                 return;
+
+            // Look fot the id for the selected product in BBDD and update the value in the textBox
             using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["SqlServer"].ConnectionString.ToString()))
             {
                 SqlCommand cmd = new SqlCommand($"SELECT Articulo FROM VI_prueba_art WHERE DescripcionCorta = '{odacashBox.SelectedItem.ToString()}';", conn);
@@ -116,39 +142,62 @@ namespace ExportProducts
             }
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                               
+        ///                              Display the selected image                                    ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
         protected void imageBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // If the comboBox is empty do nothing
             if (imageBox.Items.Count == 0)
                 return;
+            // If no image is selected do nothing
             if (imageBox.SelectedItem.ToString() == "-- Seleccione una imagen --")
                 return;
+            // Look for the image and display it
             ImageFactory imf = new ImageFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accImages"].ToString(), "");
             byte[] imgByte = imf.GetProductImage(Int64.Parse(idPrestashop.Text), Int64.Parse(imageBox.SelectedItem.ToString()));
             img.Source = LoadImage(imgByte);
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                               
+        ///                                Create the combination                                      ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
         public void btnInsert_Click(object sender, RoutedEventArgs e)
         {
+            // If no product is selected display a messageBox 
             if (productsBox.SelectedItem.ToString() == "-- Seleccione el producto de Prestashop --")
             {
                 System.Windows.MessageBox.Show("Elija un producto", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
                 return;
             }
+            // If no attribute is selected  display a messageBox 
             if ((attributeBox.SelectedItem.ToString() == "-- Seleccione un atributo para la combinacion --") && (attributeBox2.SelectedItem.ToString() == "-- Seleccione un atributo para la combinacion --"))
             {
                 System.Windows.MessageBox.Show("Elija minimo un atributo para la combinacion", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
                 return;
             }
-            CombinationFactory cf = new CombinationFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accCombination"].ToString(), "");
-            combination newComb = createCombination(Int32.Parse(idPrestashop.Text), getAttributeID(attributeBox.SelectedItem.ToString()), getAttributeID(attributeBox2.SelectedItem.ToString()), price.Text, imageBox.SelectedItem.ToString());
             try
             {
+                CombinationFactory cf = new CombinationFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accCombination"].ToString(), "");
+                // Create a new combination
+                combination newComb = createCombination(Int32.Parse(idPrestashop.Text), getAttributeID(attributeBox.SelectedItem.ToString()), getAttributeID(attributeBox2.SelectedItem.ToString()), price.Text, imageBox.SelectedItem.ToString());
+            
+                // Add the combination to the product
                 cf.Add(newComb);
+
+                // If an Odacash product is selected create a link to sync the  stock between Odacash and Prestashop
                 if(idOdacash.Text != "")
-                Library.insertInventory(productsBox.SelectedItem.ToString(), idPrestashop.Text , newComb.id.ToString(), idOdacash.Text);
+                    Library.insertInventory(productsBox.SelectedItem.ToString(), idPrestashop.Text , newComb.id.ToString(), idOdacash.Text);
             }
             catch (Exception ex)
             {
+                // Save the error message in a txt file
                 using (StreamWriter writer = new StreamWriter($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\ExportProducts.txt", true))
                 {
                     writer.WriteLine("Message :" + ex.Message + "<br/>" + Environment.NewLine + "StackTrace :" + ex.StackTrace +
@@ -158,6 +207,7 @@ namespace ExportProducts
             }
             finally
             {
+                // Restart all the files when the execution is over
                 productsBox.SelectedIndex = 0;
                 idPrestashop.Text = "";
                 attributeBox.SelectedIndex = 0;
@@ -168,16 +218,31 @@ namespace ExportProducts
             }
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                               
+        ///                         Event to change focus when click outside                           ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             Keyboard.ClearFocus();
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                               
+        ///              Event tu update the Prestashop comboBox when TextBox lost focus               ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
         private void idPrestashop_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
+            // If the textbox is empty do nothing
             if (idPrestashop.Text == "")
                 return;
             string articulo = "";
+
+            // Look for the product name for the id inserted in the textBox
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
             {
                 MySqlCommand cmd = new MySqlCommand($"SELECT name FROM ps_product_lang WHERE id_product = '{idPrestashop.Text}'", conn);
@@ -185,8 +250,11 @@ namespace ExportProducts
                 using (MySqlDataReader rdr = cmd.ExecuteReader())
                 {
                     rdr.Read();
+                    // If the products exist save the name
                     if (rdr.HasRows)
                         articulo = rdr[0].ToString();
+
+                    // If not exist select the index and finish the execution
                     else
                     {
                         //name.Clear();
@@ -196,14 +264,25 @@ namespace ExportProducts
                     }
                 }
             }
+
+            // Update the comboBox item selection with the product name
             productsBox.SelectedIndex = productsBox.Items.IndexOf(articulo);
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                               
+        ///              Event tu update the Odacash comboBox when TextBox lost focus                  ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
         private void idOdacash_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
+            // If the textBox is empty do nothing
             if (idOdacash.Text == "")
                 return;
             string articulo = "";
+
+            // Look for the product name for the id inserted in the textbox
             using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["SqlServer"].ConnectionString))
             {
                 SqlCommand cmd = new SqlCommand($"SELECT DescripcionCorta FROM VI_prueba_art WHERE Articulo = '{idOdacash.Text}'", conn);
@@ -211,8 +290,11 @@ namespace ExportProducts
                 using (SqlDataReader rdr = cmd.ExecuteReader())
                 {
                     rdr.Read();
+                    // If the products exist save the name
                     if (rdr.HasRows)
                         articulo = rdr[0].ToString();
+
+                    // If not exist select the index and finish the execution
                     else
                     {
                         idOdacash.Text = "";
@@ -221,9 +303,16 @@ namespace ExportProducts
                     }
                 }
             }
+
+            // Update the comboBox item selection with the product name
             odacashBox.SelectedIndex = odacashBox.Items.IndexOf(articulo);
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                               
+        ///                         Convert an image in bytes to BitmapImage                           ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
 
         private static BitmapImage LoadImage(byte[] imageData)
         {
@@ -242,8 +331,5 @@ namespace ExportProducts
             image.Freeze();
             return image;
         }
-
-
-
     }
 }
