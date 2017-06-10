@@ -95,7 +95,7 @@ namespace ExportProducts
             return prod;
         }
 
-        public static combination createCombination(int id_product, int att1, int att2, int att3, string price)
+        public static combination createCombination(int id_product, int att1, int att2, string price, string idImage)
         {
             combination comb = new combination();
 
@@ -103,14 +103,12 @@ namespace ExportProducts
             {
                 comb.associations.product_option_values.Add(createPOV(att1));
             }
-            if(att2 != 0)
+            if (att2 != 0)
             {
                 comb.associations.product_option_values.Add(createPOV(att2));
             }
-            if(att3 != 0)
-            {
-                comb.associations.product_option_values.Add(createPOV(att3));
-            }
+            if(idImage != "-- Seleccione una imagen --")
+                comb.associations.images.Add(createImage(Int32.Parse(idImage)));
             comb.available_date = "0000-00-00";
             //comb.default_on = 1;
             comb.ean13 = "";
@@ -119,7 +117,8 @@ namespace ExportProducts
             comb.id_product = id_product;
             comb.location = "";
             comb.minimal_quantity = 1;
-            comb.price = Decimal.Round((Decimal.Parse(price) / (Decimal)1.21), 6);
+            if(price != "")
+                comb.price = Decimal.Round((Decimal.Parse(price) / (Decimal)1.21), 6);
             comb.reference = "";
             comb.supplier_reference = "";
             comb.upc = "";
@@ -165,6 +164,12 @@ namespace ExportProducts
             return pov;
         }
 
+        public static Bukimedia.PrestaSharp.Entities.AuxEntities.image createImage(int id)
+        {
+            Bukimedia.PrestaSharp.Entities.AuxEntities.image a = new Bukimedia.PrestaSharp.Entities.AuxEntities.image();
+            a.id = id;
+            return a;
+        }
 
         public static int getID()
         {

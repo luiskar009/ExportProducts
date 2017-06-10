@@ -38,7 +38,7 @@ namespace ExportProducts
             imageBox.SelectedIndex = imageBox.Items.Add("-- Seleccione una imagen --");
             attributeBox.SelectedIndex = attributeBox.Items.Add("-- Seleccione un atributo para la combinacion --");
             attributeBox2.SelectedIndex = attributeBox2.Items.Add("-- Seleccione un atributo para la combinacion --");
-            attributeBox3.SelectedIndex = attributeBox3.Items.Add("-- Seleccione un atributo para la combinacion --");
+            odacashBox.SelectedIndex = odacashBox.Items.Add("-- Seleccione un producto de Odacash--");
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
             {
                 MySqlCommand cmd = new MySqlCommand("SELECT name FROM ps_product_lang ORDER BY name", conn);
@@ -57,7 +57,18 @@ namespace ExportProducts
                     {
                         attributeBox.Items.Add(rdr[0].ToString());
                         attributeBox2.Items.Add(rdr[0].ToString());
-                        attributeBox3.Items.Add(rdr[0].ToString());
+                    }
+                }
+            }
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["SqlServer"].ConnectionString.ToString()))
+            {
+                SqlCommand cmd = new SqlCommand("SELECT DescripcionCorta FROM VI_prueba_art ORDER BY DescripcionCorta;", conn);
+                conn.Open();
+                using (SqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        odacashBox.Items.Add(rdr[0].ToString());
                     }
                 }
             }
@@ -88,6 +99,23 @@ namespace ExportProducts
                 }
             }
         }
+
+        protected void odacashBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (odacashBox.SelectedItem.ToString() == "-- Seleccione un producto de Odacash--")
+                return;
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["SqlServer"].ConnectionString.ToString()))
+            {
+                SqlCommand cmd = new SqlCommand($"SELECT Articulo FROM VI_prueba_art WHERE DescripcionCorta = '{odacashBox.SelectedItem.ToString()}';", conn);
+                conn.Open();
+                using (SqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    rdr.Read();
+                    idOdacash.Text = rdr[0].ToString();
+                }
+            }
+        }
+
         protected void imageBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (imageBox.Items.Count == 0)
@@ -101,11 +129,23 @@ namespace ExportProducts
 
         public void btnInsert_Click(object sender, RoutedEventArgs e)
         {
+            if (productsBox.SelectedItem.ToString() == "-- Seleccione el producto de Prestashop --")
+            {
+                System.Windows.MessageBox.Show("Elija un producto", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
+                return;
+            }
+            if ((attributeBox.SelectedItem.ToString() == "-- Seleccione un atributo para la combinacion --") && (attributeBox2.SelectedItem.ToString() == "-- Seleccione un atributo para la combinacion --"))
+            {
+                System.Windows.MessageBox.Show("Elija minimo un atributo para la combinacion", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
+                return;
+            }
             CombinationFactory cf = new CombinationFactory(ConfigurationManager.AppSettings["baseUrl"].ToString(), ConfigurationManager.AppSettings["accCombination"].ToString(), "");
-            combination newComb = createCombination(Int32.Parse(idPrestashop.Text), getAttributeID(attributeBox.SelectedItem.ToString()), getAttributeID(attributeBox2.SelectedItem.ToString()), getAttributeID(attributeBox3.SelectedItem.ToString()), price.Text);
+            combination newComb = createCombination(Int32.Parse(idPrestashop.Text), getAttributeID(attributeBox.SelectedItem.ToString()), getAttributeID(attributeBox2.SelectedItem.ToString()), price.Text, imageBox.SelectedItem.ToString());
             try
             {
                 cf.Add(newComb);
+                if(idOdacash.Text != "")
+                Library.insertInventory(productsBox.SelectedItem.ToString(), idPrestashop.Text , newComb.id.ToString(), idOdacash.Text);
             }
             catch (Exception ex)
             {
@@ -122,7 +162,7 @@ namespace ExportProducts
                 idPrestashop.Text = "";
                 attributeBox.SelectedIndex = 0;
                 attributeBox2.SelectedIndex = 0;
-                attributeBox3.SelectedIndex = 0;
+                odacashBox.SelectedIndex = 0;
                 price.Text = "";
                 img.Source = null;
             }
@@ -158,11 +198,38 @@ namespace ExportProducts
             }
             productsBox.SelectedIndex = productsBox.Items.IndexOf(articulo);
         }
+
+        private void idOdacash_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (idOdacash.Text == "")
+                return;
+            string articulo = "";
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["SqlServer"].ConnectionString))
+            {
+                SqlCommand cmd = new SqlCommand($"SELECT DescripcionCorta FROM VI_prueba_art WHERE Articulo = '{idOdacash.Text}'", conn);
+                conn.Open();
+                using (SqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    rdr.Read();
+                    if (rdr.HasRows)
+                        articulo = rdr[0].ToString();
+                    else
+                    {
+                        idOdacash.Text = "";
+                        odacashBox.SelectedIndex = 0;
+                        return;
+                    }
+                }
+            }
+            odacashBox.SelectedIndex = odacashBox.Items.IndexOf(articulo);
+        }
+
+
         private static BitmapImage LoadImage(byte[] imageData)
         {
             if (imageData == null || imageData.Length == 0) return null;
             var image = new BitmapImage();
-            using (var mem = new MemoryStream(imageData))
+            using (MemoryStream mem = new MemoryStream(imageData))
             {
                 mem.Position = 0;
                 image.BeginInit();
