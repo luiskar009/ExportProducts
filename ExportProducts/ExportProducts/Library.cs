@@ -26,6 +26,13 @@ namespace ExportProducts
 {
     class Library
     {
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                                                                    ///
+        ///                                                  Create a new Product                                                              ///
+        ///                                                                                                                                    ///
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         public static product createProduct(string name, bool? isChecked, string shortDesc, string largeDesc, string price, string category, string manufacturer, string stockDesc, string noStockDesc)
         {
             product prod = new product();
@@ -95,6 +102,12 @@ namespace ExportProducts
             return prod;
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                                                                    ///
+        ///                                                Create a new Combination                                                            ///
+        ///                                                                                                                                    ///
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         public static combination createCombination(int id_product, int att1, int att2, string price, string idImage)
         {
             combination comb = new combination();
@@ -125,6 +138,12 @@ namespace ExportProducts
             return comb;
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                                                                    ///
+        ///                                              Create a new language element                                                         ///
+        ///                                                                                                                                    ///
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         public static Bukimedia.PrestaSharp.Entities.AuxEntities.language createAuxLanguage(string message)
         {
             Bukimedia.PrestaSharp.Entities.AuxEntities.language auxLang = new Bukimedia.PrestaSharp.Entities.AuxEntities.language();
@@ -133,12 +152,24 @@ namespace ExportProducts
             return auxLang;
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                                                                    ///
+        ///                                             Create a new Category element                                                          ///
+        ///                                                                                                                                    ///
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         public static Bukimedia.PrestaSharp.Entities.AuxEntities.category createAuxcategory(long category)
         {
             Bukimedia.PrestaSharp.Entities.AuxEntities.category auxCat = new Bukimedia.PrestaSharp.Entities.AuxEntities.category();
             auxCat.id = category;
             return auxCat;
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                                                                    ///
+        ///                                          Create a new Stock Available element                                                      ///
+        ///                                                                                                                                    ///
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public static Bukimedia.PrestaSharp.Entities.AuxEntities.stock_available createAuxStockAvailable()
         {
@@ -157,6 +188,12 @@ namespace ExportProducts
             return stockAva;
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                                                                    ///
+        ///                                           Create a new Product Option Value element                                                ///
+        ///                                                                                                                                    ///
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         public static Bukimedia.PrestaSharp.Entities.AuxEntities.product_option_value createPOV(int att)
         {
             Bukimedia.PrestaSharp.Entities.AuxEntities.product_option_value pov = new Bukimedia.PrestaSharp.Entities.AuxEntities.product_option_value();
@@ -164,12 +201,24 @@ namespace ExportProducts
             return pov;
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                                                                    ///
+        ///                                              Create a new image element                                                            ///
+        ///                                                                                                                                    ///
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         public static Bukimedia.PrestaSharp.Entities.AuxEntities.image createImage(int id)
         {
             Bukimedia.PrestaSharp.Entities.AuxEntities.image a = new Bukimedia.PrestaSharp.Entities.AuxEntities.image();
             a.id = id;
             return a;
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                                                                    ///
+        ///                                           Get the next product id available                                                        ///
+        ///                                                                                                                                    ///
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public static int getID()
         {
@@ -185,6 +234,12 @@ namespace ExportProducts
             }
             return Int32.Parse(ConfigurationManager.AppSettings["idPrestashop"].ToString());
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                                                                    ///
+        ///                                           Get the next combination available                                                       ///
+        ///                                                                                                                                    ///
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public static int getIDComb()
         {
@@ -202,6 +257,12 @@ namespace ExportProducts
             return id;
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                                                                    ///
+        ///                                                       Get category ID                                                              ///
+        ///                                                                                                                                    ///
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         public static int getCategoryID(string category)
         {
             int id = 0;
@@ -218,6 +279,12 @@ namespace ExportProducts
             return id;
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                                                                    ///
+        ///                                                   Get manufacturer ID                                                              ///
+        ///                                                                                                                                    ///
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         public static int getManufacturerID(string manufacturer)
         {
             int id = 0;
@@ -233,6 +300,12 @@ namespace ExportProducts
             }
             return id;
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                                                                    ///
+        ///                                                     Get attribute ID                                                               ///
+        ///                                                                                                                                    ///
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public static int getAttributeID(string attribute)
         {
@@ -253,10 +326,14 @@ namespace ExportProducts
             return id;
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                                                                    ///
+        ///                                       Create a link between Prestashop and Odacash ID                                              ///
+        ///                                                                                                                                    ///
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         public static void insertInventory(string Producto, string id_product, string id_product_attribute, string Articulo)
         {
-           
-
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString))
             {
                 MySqlCommand cmd = new MySqlCommand($"INSERT INTO InventarioTablas (Producto, id_product, id_product_attribute, Articulo) VALUES ('{Producto}', '{id_product}', '{id_product_attribute}', '{Articulo}')", conn);

@@ -21,6 +21,8 @@ using System.IO;
 using Bukimedia.PrestaSharp.Factories;
 using Bukimedia.PrestaSharp.Entities;
 using System.Windows.Forms;
+using System.ComponentModel;
+using static ExportProducts.Library;
 
 namespace ExportProducts
 {
@@ -75,7 +77,7 @@ namespace ExportProducts
             try
             {
                 // Create new product
-                product newProd = Library.createProduct(name.Text, yes.IsChecked, textRangeShort.Text, textRangeLarge.Text, price.Text, categoryBox.SelectedItem.ToString(), manufacturerBox.SelectedItem.ToString(), textStock.Text, textNoStock.Text);
+                product newProd = createProduct(name.Text, yes.IsChecked, textRangeShort.Text, textRangeLarge.Text, price.Text, categoryBox.SelectedItem.ToString(), manufacturerBox.SelectedItem.ToString(), textStock.Text, textNoStock.Text);
             
                 // Insert it to the web
                 pf.Add(newProd);
@@ -143,6 +145,17 @@ namespace ExportProducts
             {
                 System.Windows.MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
             }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                        
+        ///              Event to prevent MainWindow to minimize when closes this window               ///         
+        ///                                                                                            ///                                        
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            this.Owner = null;
         }
     }
 }

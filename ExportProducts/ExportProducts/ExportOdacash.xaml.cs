@@ -21,6 +21,8 @@ using System.IO;
 using Bukimedia.PrestaSharp.Factories;
 using Bukimedia.PrestaSharp.Entities;
 using System.Windows.Forms;
+using System.ComponentModel;
+using static ExportProducts.Library;
 
 
 namespace ExportProducts
@@ -127,7 +129,7 @@ namespace ExportProducts
             try
             {
                 // Create a Product
-                product newProd = Library.createProduct(name.Text, yes.IsChecked, textRangeShort.Text, textRangeLarge.Text, price.Text, categoryBox.SelectedItem.ToString(), manufacturerBox.SelectedItem.ToString(), textStock.Text, textNoStock.Text);
+                product newProd = createProduct(name.Text, yes.IsChecked, textRangeShort.Text, textRangeLarge.Text, price.Text, categoryBox.SelectedItem.ToString(), manufacturerBox.SelectedItem.ToString(), textStock.Text, textNoStock.Text);
                 // Add the product to the web
                 pf.Add(newProd);
 
@@ -141,7 +143,7 @@ namespace ExportProducts
                 }
 
                 // Create a link to sync the stock between Odacash and Prestashop
-                Library.insertInventory(name.Text, ConfigurationManager.AppSettings["idPrestashop"].ToString(), "0", idOdacash.Text);
+                insertInventory(name.Text, ConfigurationManager.AppSettings["idPrestashop"].ToString(), "0", idOdacash.Text);
             }
             catch (Exception ex)
             {
@@ -250,5 +252,17 @@ namespace ExportProducts
             // Update the comboBox item selection with the product name
             productsBox.SelectedIndex = productsBox.Items.IndexOf(articulo);
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                        
+        ///              Event to prevent MainWindow to minimize when closes this window               ///         
+        ///                                                                                            ///                                        
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            this.Owner = null;
+        }
+
     }
 }

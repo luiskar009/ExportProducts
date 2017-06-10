@@ -22,6 +22,7 @@ using Bukimedia.PrestaSharp.Factories;
 using Bukimedia.PrestaSharp.Entities;
 using System.Windows.Forms;
 using static ExportProducts.Library;
+using System.ComponentModel;
 
 namespace ExportProducts
 {
@@ -198,7 +199,7 @@ namespace ExportProducts
             catch (Exception ex)
             {
                 // Save the error message in a txt file
-                using (StreamWriter writer = new StreamWriter($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\ExportProducts.txt", true))
+                using (StreamWriter writer = new StreamWriter(@"C:\ExportProduct\ExportProducts.txt", true))
                 {
                     writer.WriteLine("Message :" + ex.Message + "<br/>" + Environment.NewLine + "StackTrace :" + ex.StackTrace +
                        "" + Environment.NewLine + "Date :" + DateTime.Now.ToString());
@@ -330,6 +331,17 @@ namespace ExportProducts
             }
             image.Freeze();
             return image;
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                        
+        ///              Event to prevent MainWindow to minimize when closes this window               ///         
+        ///                                                                                            ///                                        
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            this.Owner = null;
         }
     }
 }

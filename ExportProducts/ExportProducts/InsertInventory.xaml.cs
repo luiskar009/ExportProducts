@@ -16,8 +16,7 @@ using System.Data.SqlClient;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Configuration;
-using System.Data;
-using System.IO;
+using System.ComponentModel;
 
 namespace ExportProducts
 {
@@ -29,16 +28,14 @@ namespace ExportProducts
         public InsertInventory()
         {
             InitializeComponent();
-            WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
 
+            // Look for products in the database and fill it in the comboBox
             using (MySqlConnection connOrigen = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString))
             {
                 MySqlCommand cmd = new MySqlCommand("SELECT Producto FROM InventarioTablas ORDER BY Producto", connOrigen);
                 connOrigen.Open();
                 using (MySqlDataReader rdr = cmd.ExecuteReader())
                 {
-
-                    ProductCombo.Items.Clear();
                     ProductCombo.SelectedIndex = ProductCombo.Items.Add("-- Selecione el producto a modificar --");
                     while (rdr.Read())
                     {
@@ -58,17 +55,17 @@ namespace ExportProducts
         {
             try
             {
-                String Producto = boxProductoMB.Text;
-                if (String.IsNullOrWhiteSpace(Producto))
+                string Producto = boxProductoMB.Text;
+                if (string.IsNullOrWhiteSpace(Producto))
                     MessageBox.Show("Error en el campo Producto", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
-                String id_product = boxIdProductMB.Text;
-                if (String.IsNullOrWhiteSpace(id_product))
+                string id_product = boxIdProductMB.Text;
+                if (string.IsNullOrWhiteSpace(id_product))
                     MessageBox.Show("Error en el campo id_producto", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
-                String id_product_attribute = boxAttributeMB.Text;
-                if (String.IsNullOrWhiteSpace(id_product_attribute))
+                string id_product_attribute = boxAttributeMB.Text;
+                if (string.IsNullOrWhiteSpace(id_product_attribute))
                     MessageBox.Show("Error en el campo id_producto_attribute", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
-                String Articulo = boxArticuloMB.Text;
-                if (String.IsNullOrWhiteSpace(Articulo))
+                string Articulo = boxArticuloMB.Text;
+                if (string.IsNullOrWhiteSpace(Articulo))
                     MessageBox.Show("Error en el campo Articulo", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
 
                 using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString))
@@ -100,17 +97,17 @@ namespace ExportProducts
         {
             try
             {
-                String Producto = boxProductoTPB.Text;
-                if (String.IsNullOrWhiteSpace(Producto))
+                string Producto = boxProductoTPB.Text;
+                if (string.IsNullOrWhiteSpace(Producto))
                     MessageBox.Show("Error en el campo Producto", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
-                String id_product = boxIdProductTPB.Text;
-                if (String.IsNullOrWhiteSpace(id_product))
+                string id_product = boxIdProductTPB.Text;
+                if (string.IsNullOrWhiteSpace(id_product))
                     MessageBox.Show("Error en el campo id_producto", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
-                String id_product_attribute = boxAttributeTPB.Text;
-                if (String.IsNullOrWhiteSpace(id_product_attribute))
+                string id_product_attribute = boxAttributeTPB.Text;
+                if (string.IsNullOrWhiteSpace(id_product_attribute))
                     MessageBox.Show("Error en el campo id_producto_attribute", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
-                String Articulo = boxArticuloTPB.Text;
-                if (String.IsNullOrWhiteSpace(Articulo))
+                string Articulo = boxArticuloTPB.Text;
+                if (string.IsNullOrWhiteSpace(Articulo))
                     MessageBox.Show("Error en el campo Articulo", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
 
                 using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString))
@@ -142,14 +139,14 @@ namespace ExportProducts
         {
             try
             {
-                String Producto = ProductCombo.SelectedItem.ToString();
+                string Producto = ProductCombo.SelectedItem.ToString();
                 if (Producto == "-- Selecione el producto a modificar --")
                     MessageBox.Show("Elija el producto a modificar", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
-                String id_product = boxIdProductEdit.Text;
-                if (String.IsNullOrWhiteSpace(id_product))
+                string id_product = boxIdProductEdit.Text;
+                if (string.IsNullOrWhiteSpace(id_product))
                     MessageBox.Show("Error en el campo id_producto", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
-                String id_product_attribute = boxAttributeEdit.Text;
-                if (String.IsNullOrWhiteSpace(id_product_attribute))
+                string id_product_attribute = boxAttributeEdit.Text;
+                if (string.IsNullOrWhiteSpace(id_product_attribute))
                     MessageBox.Show("Error en el campo id_producto_attribute", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
 
                 using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString))
@@ -173,18 +170,15 @@ namespace ExportProducts
             }
         }
 
-        void NewWindowAsDialog(object sender, RoutedEventArgs e)
-        {
-            MainWindow MainWindow = new MainWindow();
-            MainWindow.Owner = this;
-            MainWindow.ShowDialog();
-        }
-        void NormalNewWindow(object sender, RoutedEventArgs e)
-        {
-            MainWindow myOwnedWindow = new MainWindow();
-            myOwnedWindow.Owner = this;
-            myOwnedWindow.Show();
-        }
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                        
+        ///              Event to prevent MainWindow to minimize when closes this window               ///         
+        ///                                                                                            ///                                        
+        //////////////////////////////////////////////////////////////////////////////////////////////////
 
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            this.Owner = null;
+        }
     }
 }
