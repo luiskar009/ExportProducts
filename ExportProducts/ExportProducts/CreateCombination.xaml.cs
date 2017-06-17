@@ -343,5 +343,10 @@ namespace ExportProducts
         {
             this.Owner = null;
         }
+
+        private void btnEditMB_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

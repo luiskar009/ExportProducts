@@ -102,11 +102,48 @@ namespace ExportProducts
             return prod;
         }
 
+        public static product editProduct(product prod, string name, bool? isChecked, string shortDesc, string largeDesc, string price, string category, string manufacturer, string stockDesc, string noStockDesc)
+        {
+            //if (isChecked ?? true)
+            //    prod.active = 1;
+            //else
+            //    prod.active = 0;
+            //if (category != "-- Selecione la Categoria de Prestashop --")
+            //    prod.associations.categories.Add(createAuxcategory(getCategoryID(category)));
+            //prod.associations.stock_availables.Add(createAuxStockAvailable());
+            //prod.available_later.Add(createAuxLanguage(noStockDesc));
+            //prod.available_now.Add(createAuxLanguage(stockDesc));
+            //prod.description.Add(createAuxLanguage(largeDesc));
+            //prod.description_short.Add(createAuxLanguage(shortDesc));
+            //if (manufacturer != "-- Selecione el Fabricante de Prestashop --")
+            //    prod.id_manufacturer = getManufacturerID(manufacturer);
+            //if (name != prod.name[0].Value)
+            //{
+            //    //prod.name.RemoveAt(0);
+            //    //prod.name.Add(createAuxLanguage(name));
+            //    prod.name[0].Value = name;
+            //}
+            prod.price = Decimal.Round((Decimal.Parse(price) / (Decimal)1.21), 6);
+            return prod;
+        }
+
+        public static void editProductFromBD(string id, string name, bool? isChecked, string shortDesc, string largeDesc, string price, string category, string manufacturer, string stockDesc, string noStockDesc)        {
+            using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
+            {
+                MySqlCommand cmd = new MySqlCommand($"UPDATE ps_product_lang SET name = '{name}', description = '{largeDesc}', description_short = '{shortDesc}', available_now = '{stockDesc}', available_later = '{noStockDesc}' WHERE id_product = '{id}' ", conn);
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                MySqlCommand cmd2 = new MySqlCommand($"UPDATE ps_product SET id_manufacturer = '{manufacturer}', id_category_default = '{category}', price = '{price}', active = '{isChecked}' WHERE id_product = '{id}' ", conn);
+                cmd2.ExecuteNonQuery();
+            }
+
+        }
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///                                                                                                                                    ///
         ///                                                Create a new Combination                                                            ///
         ///                                                                                                                                    ///
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public static combination createCombination(int id_product, int att1, int att2, string price, string idImage)
         {
