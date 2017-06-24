@@ -38,14 +38,6 @@ namespace ExportProducts
             {
                 MySqlCommand cmd = new MySqlCommand("SELECT Producto, id_product, id_product_attribute, Articulo, Baja FROM InventarioTablas ORDER BY Producto", connOrigen);
                 connOrigen.Open();
-                using (MySqlDataReader rdr = cmd.ExecuteReader())
-                {
-                    ProductCombo.SelectedIndex = ProductCombo.Items.Add("-- Selecione el producto a modificar --");
-                    while (rdr.Read())
-                    {
-                        ProductCombo.Items.Add(rdr["Producto"].ToString());
-                    }
-                }
                 sda = new MySqlDataAdapter(cmd);
                 dt = new DataTable("InventarioTablas");
                 sda.Fill(dt);
