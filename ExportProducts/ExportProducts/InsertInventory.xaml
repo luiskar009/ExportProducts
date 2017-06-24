@@ -63,7 +63,7 @@
                 <Button Grid.Row="8" Grid.ColumnSpan="2" x:Name="btnInsertTPB" Click="btnInsertTPB_Click" Content="Insertar Fila"/>
             </Grid>
         </TabItem>
-        <TabItem Header="Editar">
+        <TabItem Header="Mostrar Enlaces">
             <Grid Margin="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="125*" />
@@ -81,16 +81,8 @@
                     <RowDefinition Height="8*" />
                     <RowDefinition Height="25*" />
                 </Grid.RowDefinitions>
-                <Label Grid.Row="0" VerticalAlignment="Center">Producto</Label>
-                <ComboBox Grid.Column="1" Grid.ColumnSpan="2" Name="ProductCombo" VerticalAlignment="Center"></ComboBox>
-                <Label Grid.Row="2" VerticalAlignment="Center">Tienda</Label>
-                <RadioButton Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Name="MB">Mima Bebes</RadioButton>
-                <RadioButton Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Name="TPB">Todo para Bebes</RadioButton>
-                <Label Grid.Row="4" VerticalAlignment="Center">id product</Label>
-                <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Name="boxIdProductEdit"/>
-                <Label Grid.Row="6" VerticalAlignment="Center">id product atributte</Label>
-                <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Name="boxAttributeEdit"/>
-                <Button Grid.Row="8" Grid.ColumnSpan="3" x:Name="btnInsertEdit" Click="btnInsertEdit_Click" Content="Insertar Fila"/>
+                <DataGrid Grid.Row="0" Grid.RowSpan="8" Grid.ColumnSpan="3" Name="tablaSQL" />
+                <Button Grid.Row="8" Grid.ColumnSpan="3" x:Name="btnUpdate" Click="btnUpdate_Click" Content="Actualizar"/>
             </Grid>
         </TabItem>
     </TabControl>

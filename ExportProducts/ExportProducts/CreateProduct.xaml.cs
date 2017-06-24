@@ -43,6 +43,7 @@ namespace ExportProducts
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
             {
                 MySqlCommand cmd = new MySqlCommand("SELECT DISTINCT name FROM ps_category_lang WHERE id_shop = '1' AND id_category <> '1'", conn);
+                cmd.CommandTimeout = 5000;
                 conn.Open();
                 using (MySqlDataReader rdr = cmd.ExecuteReader())
                 {
@@ -52,6 +53,7 @@ namespace ExportProducts
                     }
                 }
                 MySqlCommand cmd2 = new MySqlCommand("SELECT name FROM ps_manufacturer", conn);
+                cmd2.CommandTimeout = 5000;
                 using (MySqlDataReader rdr = cmd2.ExecuteReader())
                 {
                     while (rdr.Read())
@@ -60,6 +62,7 @@ namespace ExportProducts
                     }
                 }
                 MySqlCommand cmd3 = new MySqlCommand("SELECT DISTINCT name FROM ps_product_lang", conn);
+                cmd3.CommandTimeout = 5000;
                 using (MySqlDataReader rdr = cmd3.ExecuteReader())
                 {
                     while (rdr.Read())
@@ -227,21 +230,21 @@ namespace ExportProducts
 
             try
             {
-                // Edit product
+                //// Edit product
                 //product editProd = editProduct(pf.Get(Int64.Parse(id)), name.Text, yes.IsChecked, textRangeShort.Text, textRangeLarge.Text, price.Text, categoryBox.SelectedItem.ToString(), manufacturerBox.SelectedItem.ToString(), textStock.Text, textNoStock.Text);
-                // Insert it to the web
+                //// Insert it to the web
                 //pf.Update(pf.Get(Int64.Parse(id)));
 
                 editProductFromBD(id, name.Text, yes.IsChecked, textRangeShort.Text, textRangeLarge.Text, price.Text, idcat, idman, textStock.Text, textNoStock.Text);
 
                 // If the product have images insert it too.
                 if (imgBox.HasItems)
-              {
-                  for (int i = 0; imgBox.Items.Count > i; i++)
-                  {
-                     //imf.AddProductImage((long)editProd.id, imgBox.Items[i].ToString());
-                  }
-              }
+                {
+                    for (int i = 0; imgBox.Items.Count > i; i++)
+                    {
+                         //imf.AddProductImage((long)editProd.id, imgBox.Items[i].ToString());
+                    }
+                }
             }
             catch (Exception ex)
             {

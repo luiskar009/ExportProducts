@@ -17,6 +17,7 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Configuration;
 using System.ComponentModel;
+using System.Data;
 
 namespace ExportProducts
 {
@@ -25,6 +26,9 @@ namespace ExportProducts
     /// </summary>
     public partial class InsertInventory : Window
     {
+        DataTable dt;
+        MySqlDataAdapter sda;
+
         public InsertInventory()
         {
             InitializeComponent();
@@ -32,7 +36,7 @@ namespace ExportProducts
             // Look for products in the database and fill it in the comboBox
             using (MySqlConnection connOrigen = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString))
             {
-                MySqlCommand cmd = new MySqlCommand("SELECT Producto FROM InventarioTablas ORDER BY Producto", connOrigen);
+                MySqlCommand cmd = new MySqlCommand("SELECT Producto, id_product, id_product_attribute, Articulo, Baja FROM InventarioTablas ORDER BY Producto", connOrigen);
                 connOrigen.Open();
                 using (MySqlDataReader rdr = cmd.ExecuteReader())
                 {
@@ -42,6 +46,10 @@ namespace ExportProducts
                         ProductCombo.Items.Add(rdr["Producto"].ToString());
                     }
                 }
+                sda = new MySqlDataAdapter(cmd);
+                dt = new DataTable("InventarioTablas");
+                sda.Fill(dt);
+                tablaSQL.ItemsSource = dt.DefaultView;
             }
         }
 
@@ -131,43 +139,24 @@ namespace ExportProducts
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///                                                                                                                                    ///
-        ///                                              Handle click button event Editar                                                      ///
+        ///                                                    Update InventarioTablas                                                         ///
         ///                                                                                                                                    ///
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public void btnInsertEdit_Click(object sender, RoutedEventArgs e)
+        public void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            try
+            using (MySqlConnection connOrigen = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString))
             {
-                string Producto = ProductCombo.SelectedItem.ToString();
-                if (Producto == "-- Selecione el producto a modificar --")
-                    MessageBox.Show("Elija el producto a modificar", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
-                string id_product = boxIdProductEdit.Text;
-                if (string.IsNullOrWhiteSpace(id_product))
-                    MessageBox.Show("Error en el campo id_producto", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
-                string id_product_attribute = boxAttributeEdit.Text;
-                if (string.IsNullOrWhiteSpace(id_product_attribute))
-                    MessageBox.Show("Error en el campo id_producto_attribute", "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
-
-                using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString))
+                DataTable changes = this.dt.GetChanges();
+                connOrigen.Open();
+                if (changes != null)
                 {
-                    MySqlCommand cmd = null;
-                    if (MB.IsChecked ?? false)
-                        cmd = new MySqlCommand($"UPDATE InventarioTablas SET id_product = '{id_product}', id_product_attribute = '{id_product_attribute}' WHERE Producto = '{Producto}'", conn);
-                    if (TPB.IsChecked ?? false)
-                        cmd = new MySqlCommand($"UPDATE InventarioTablas SET id_product_todo = '{id_product}', id_product_todo_attribute = '{id_product_attribute}' WHERE Producto = '{Producto}'", conn);
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
+                    MySqlCommandBuilder sqb = new MySqlCommandBuilder(sda);
+                    int updatedRows = this.sda.Update(changes);
+                    this.dt.AcceptChanges();
                 }
-
-                boxIdProductEdit.Clear();
-                boxAttributeEdit.Clear();
-
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
-            }
+            MessageBox.Show("Se ha actualizado la Base de Datos", "Actualizado", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, System.Windows.MessageBoxOptions.DefaultDesktopOnly);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////

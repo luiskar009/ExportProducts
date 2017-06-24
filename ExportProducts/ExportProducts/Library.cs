@@ -127,7 +127,8 @@ namespace ExportProducts
             return prod;
         }
 
-        public static void editProductFromBD(string id, string name, bool? isChecked, string shortDesc, string largeDesc, string price, string category, string manufacturer, string stockDesc, string noStockDesc)        {
+        public static void editProductFromBD(string id, string name, bool? isChecked, string shortDesc, string largeDesc, string price, string category, string manufacturer, string stockDesc, string noStockDesc)
+        {
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
             {
                 MySqlCommand cmd = new MySqlCommand($"UPDATE ps_product_lang SET name = '{name}', description = '{largeDesc}', description_short = '{shortDesc}', available_now = '{stockDesc}', available_later = '{noStockDesc}' WHERE id_product = '{id}' ", conn);
@@ -143,7 +144,7 @@ namespace ExportProducts
         ///                                                                                                                                    ///
         ///                                                Create a new Combination                                                            ///
         ///                                                                                                                                    ///
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public static combination createCombination(int id_product, int att1, int att2, string price, string idImage)
         {
