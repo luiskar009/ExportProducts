@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ExportProducts"
         mc:Ignorable="d"
-        Title="InsertInventory" Height="250" Width="600" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+        Title="InsertInventory" Height="500" Width="693" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
     <TabControl>
         <TabItem Header="Mima Bebes">
             <Grid Margin="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="125*" />
-                    <ColumnDefinition Width="447*" />
+                    <ColumnDefinition Width="600*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="20*" />
@@ -22,24 +22,33 @@
                     <RowDefinition Height="8*" />
                     <RowDefinition Height="20*" />
                     <RowDefinition Height="8*" />
-                    <RowDefinition Height="25*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
                 </Grid.RowDefinitions>
-                <Label Grid.Row="0">Producto</Label>
-                <TextBox  Grid.Column="2" Name="boxProductoMB"/>
-                <Label Grid.Row="2">id product</Label>
-                <TextBox Grid.Row="2" Grid.Column="1" Name="boxIdProductMB"/>
-                <Label Grid.Row="4">id product atributte</Label>
-                <TextBox Grid.Row="4" Grid.Column="1" Name="boxAttributeMB"/>
-                <Label Grid.Row="6">Articulo</Label>
-                <TextBox Grid.Row="6" Grid.Column="1" Name="boxArticuloMB"/>
-                <Button Grid.Row="8" Grid.ColumnSpan="2" x:Name="btnInsertMB" Click="btnInsertMB_Click" Content="Insertar Fila"/>
+                <Label Grid.Row="0" VerticalAlignment="Center">Producto</Label>
+                <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Name="productsBoxMB" SelectionChanged="productsBoxMB_SelectionChanged"></ComboBox>
+                <TextBox Grid.Row="2" Grid.Column="2" Name="boxProductoMB"/>
+                <Label Grid.Row="4">id product</Label>
+                <TextBox Grid.Row="4" Grid.Column="1" Name="boxIdProductMB" LostKeyboardFocus="idProductMB_LostKeyboardFocus"/>
+                <Label Grid.Row="6">id product atributte</Label>
+                <ComboBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Name="idProductAttributeBox" SelectionChanged="idProductAttributeBox_SelectionChanged"></ComboBox>
+                <TextBox Grid.Row="8" Grid.Column="1" Name="boxAttributeMB"/>
+                <Label Grid.Row="10">Articulo</Label>
+                <ComboBox Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" Name="articuloBoxMB" SelectionChanged="articuloBoxMB_SelectionChanged"></ComboBox>
+                <TextBox Grid.Row="12" Grid.Column="1" Name="boxArticuloMB" LostKeyboardFocus="idOdacashMB_LostKeyboardFocus"/>
+                <Button Grid.Row="14" Grid.ColumnSpan="2" x:Name="btnInsertMB" Click="btnInsertMB_Click" Content="Insertar Fila"/>
             </Grid>
         </TabItem>
         <TabItem Header="Todo Para Bebés">
             <Grid Margin="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="125*" />
-                    <ColumnDefinition Width="447*" />
+                    <ColumnDefinition Width="600*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="20*" />
@@ -50,17 +59,23 @@
                     <RowDefinition Height="8*" />
                     <RowDefinition Height="20*" />
                     <RowDefinition Height="8*" />
-                    <RowDefinition Height="25*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0">Producto</Label>
-                <TextBox  Grid.Column="2" Name="boxProductoTPB"/>
-                <Label Grid.Row="2">id product</Label>
-                <TextBox Grid.Row="2" Grid.Column="1" Name="boxIdProductTPB"/>
-                <Label Grid.Row="4">id product atributte</Label>
-                <TextBox Grid.Row="4" Grid.Column="1" Name="boxAttributeTPB"/>
-                <Label Grid.Row="6">Articulo</Label>
-                <TextBox Grid.Row="6" Grid.Column="1" Name="boxArticuloTPB"/>
-                <Button Grid.Row="8" Grid.ColumnSpan="2" x:Name="btnInsertTPB" Click="btnInsertTPB_Click" Content="Insertar Fila"/>
+                <TextBox Grid.Row="2" Grid.Column="2" Name="boxProductoTPB"/>
+                <Label Grid.Row="4">id product</Label>
+                <TextBox Grid.Row="4" Grid.Column="1" Name="boxIdProductTPB"/>
+                <Label Grid.Row="6">id product atributte</Label>
+                <TextBox Grid.Row="8" Grid.Column="1" Name="boxAttributeTPB"/>
+                <Label Grid.Row="10">Articulo</Label>
+                <TextBox Grid.Row="12" Grid.Column="1" Name="boxArticuloTPB"/>
+                <Button Grid.Row="14" Grid.ColumnSpan="2" x:Name="btnInsertTPB" Click="btnInsertTPB_Click" Content="Insertar Fila"/>
             </Grid>
         </TabItem>
         <TabItem Header="Mostrar Enlaces">
@@ -68,7 +83,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="125*" />
                     <ColumnDefinition Width="223*" />
-                    <ColumnDefinition Width="223*" />
+                    <ColumnDefinition Width="377*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="20*" />
@@ -80,9 +95,16 @@
                     <RowDefinition Height="20*" />
                     <RowDefinition Height="8*" />
                     <RowDefinition Height="25*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
+                    <RowDefinition Height="8*" />
+                    <RowDefinition Height="20*" />
                 </Grid.RowDefinitions>
-                <DataGrid Grid.Row="0" Grid.RowSpan="8" Grid.ColumnSpan="3" Name="tablaSQL" />
-                <Button Grid.Row="8" Grid.ColumnSpan="3" x:Name="btnUpdate" Click="btnUpdate_Click" Content="Actualizar"/>
+                <DataGrid Grid.Row="0" Grid.RowSpan="16" Grid.ColumnSpan="3" Name="tablaSQL" />
+                <Button Grid.Row="15" Grid.ColumnSpan="3" x:Name="btnUpdate" Click="btnUpdate_Click" Content="Actualizar"/>
             </Grid>
         </TabItem>
     </TabControl>
