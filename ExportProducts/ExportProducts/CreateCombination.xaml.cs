@@ -45,7 +45,7 @@ namespace ExportProducts
             // Fill the comboBoxs with Prestashop products names and attribute names
             using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB"].ConnectionString.ToString()))
             {
-                MySqlCommand cmd = new MySqlCommand("SELECT name FROM ps_product_lang ORDER BY name", conn);
+                MySqlCommand cmd = new MySqlCommand("SELECT DISTINCT name FROM ps_product_lang ORDER BY name", conn);
                 conn.Open();
                 using (MySqlDataReader rdr = cmd.ExecuteReader())
                 {
