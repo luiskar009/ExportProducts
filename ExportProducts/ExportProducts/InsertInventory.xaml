@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ExportProducts"
         mc:Ignorable="d"
-        Title="InsertInventory" Height="500" Width="693" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+        Title="InsertInventory" Height="500" Width="743" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
     <TabControl>
         <TabItem Header="Mima Bebes">
             <Grid Margin="10">
@@ -68,12 +68,15 @@
                     <RowDefinition Height="20*" />
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0">Producto</Label>
+                <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Name="productsBoxTPB" SelectionChanged="productsBoxTPB_SelectionChanged"></ComboBox>
                 <TextBox Grid.Row="2" Grid.Column="2" Name="boxProductoTPB"/>
                 <Label Grid.Row="4">id product</Label>
                 <TextBox Grid.Row="4" Grid.Column="1" Name="boxIdProductTPB"/>
                 <Label Grid.Row="6">id product atributte</Label>
+                <ComboBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Name="idProductAttributeBoxTPB" SelectionChanged="idProductAttributeBoxTPB_SelectionChanged"></ComboBox>
                 <TextBox Grid.Row="8" Grid.Column="1" Name="boxAttributeTPB"/>
                 <Label Grid.Row="10">Articulo</Label>
+                <ComboBox Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" Name="articuloBoxTPB" SelectionChanged="articuloBoxTPB_SelectionChanged"></ComboBox>
                 <TextBox Grid.Row="12" Grid.Column="1" Name="boxArticuloTPB"/>
                 <Button Grid.Row="14" Grid.ColumnSpan="2" x:Name="btnInsertTPB" Click="btnInsertTPB_Click" Content="Insertar Fila"/>
             </Grid>
@@ -103,7 +106,7 @@
                     <RowDefinition Height="8*" />
                     <RowDefinition Height="20*" />
                 </Grid.RowDefinitions>
-                <DataGrid Grid.Row="0" Grid.RowSpan="16" Grid.ColumnSpan="3" Name="tablaSQL" />
+                <DataGrid Grid.Row="0" Grid.RowSpan="14" Grid.ColumnSpan="3" Name="tablaSQL" />
                 <Button Grid.Row="15" Grid.ColumnSpan="3" x:Name="btnUpdate" Click="btnUpdate_Click" Content="Actualizar"/>
             </Grid>
         </TabItem>

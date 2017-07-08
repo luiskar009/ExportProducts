@@ -26,7 +26,7 @@ namespace ExportProducts
     /// </summary>
     public partial class InsertInventory : Window
     {
-        DataTable dt;
+        DataTable dt, dt2;
         MySqlDataAdapter sda;
 
         public InsertInventory()
@@ -44,6 +44,7 @@ namespace ExportProducts
                     while (rdr.Read())
                     {
                         articuloBoxMB.Items.Add(rdr[0].ToString());
+                        articuloBoxTPB.Items.Add(rdr[0].ToString());
                     }
                 }
             }
@@ -69,6 +70,25 @@ namespace ExportProducts
                 dt = new DataTable("InventarioTablas");
                 sda.Fill(dt);
                 tablaSQL.ItemsSource = dt.DefaultView;
+            }
+
+            articuloBoxTPB.Items.Clear();
+            articuloBoxTPB.SelectedIndex = articuloBoxMB.Items.Add("-- Selecione el producto de Odacash --");
+            idProductAttributeBoxTPB.Items.Clear();
+            idProductAttributeBoxTPB.SelectedIndex = idProductAttributeBoxTPB.Items.Add("-- Selecione un Atributo --");
+            productsBoxTPB.Items.Clear();
+            productsBoxTPB.SelectedIndex = productsBoxTPB.Items.Add("-- Selecione el producto de Prestashop --");
+            using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB2"].ConnectionString.ToString()))
+            {
+                MySqlCommand cmd = new MySqlCommand("SELECT DISTINCT name FROM ps_product_lang ORDER BY name", conn);
+                conn.Open();
+                using (MySqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        productsBoxTPB.Items.Add(rdr[0].ToString());
+                    }
+                }
             }
         }
 
@@ -151,6 +171,88 @@ namespace ExportProducts
                     return;
                 }
                 boxAttributeMB.Text = idProductAttributeBox.SelectedItem.ToString();
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                                                                         
+        ///         Updates the Prestashop ID when change the selected product in the comboBox         ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
+        protected void productsBoxTPB_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (productsBoxTPB.SelectedItem.ToString() == "-- Selecione el producto de Prestashop --")
+                return;
+            using (MySqlConnection conn = new MySqlConnection(ConfigurationManager.ConnectionStrings["MySqlDB2"].ConnectionString.ToString()))
+            {
+                MySqlCommand cmd = new MySqlCommand($"SELECT id_product FROM ps_product_lang WHERE name = '{productsBoxTPB.SelectedItem.ToString()}';", conn);
+                conn.Open();
+                using (MySqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    rdr.Read();
+                    boxIdProductTPB.Text = rdr[0].ToString();
+                }
+                MySqlCommand cmd2 = new MySqlCommand($"SELECT id_product_attribute FROM ps_product_attribute WHERE id_product = '{boxIdProductTPB.Text}';", conn);
+                using (MySqlDataReader rdr = cmd2.ExecuteReader())
+                {
+                    if (rdr.HasRows)
+                    {
+                        idProductAttributeBoxTPB.Items.Clear();
+                        idProductAttributeBoxTPB.SelectedIndex = idProductAttributeBoxTPB.Items.Add("-- Selecione un Atributo --");
+                        while (rdr.Read())
+                        {
+                            idProductAttributeBoxTPB.Items.Add(rdr[0].ToString());
+                        }
+                    }
+                    else
+                    {
+                        boxProductoTPB.Text = "";
+                        productsBoxTPB.SelectedItem = 0;
+                    }
+                }
+            }
+            boxProductoTPB.Text = productsBoxTPB.SelectedItem.ToString();
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                                                                         
+        ///         Updates the Odacash ID when change the selected product in the comboBox            ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
+        protected void articuloBoxTPB_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (articuloBoxTPB.SelectedItem.ToString() == "-- Selecione el producto de Odacash --")
+                return;
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["SqlServer"].ConnectionString.ToString()))
+            {
+                SqlCommand cmd = new SqlCommand($"SELECT Articulo FROM VI_prueba_art WHERE DescripcionCorta = '{articuloBoxTPB.SelectedItem.ToString()}';", conn);
+                conn.Open();
+                using (SqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    rdr.Read();
+                    boxArticuloTPB.Text = rdr[0].ToString();
+                }
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        ///                                                                                            ///                                                                                         
+        ///         Updates the attribute ID when change the selected product in the comboBox          ///               
+        ///                                                                                            ///                                    
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
+        protected void idProductAttributeBoxTPB_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (idProductAttributeBoxTPB.HasItems)
+            {
+                if (idProductAttributeBoxTPB.SelectedItem.ToString() == "-- Selecione un Atributo --")
+                {
+                    boxAttributeTPB.Text = "0";
+                    return;
+                }
+                boxAttributeTPB.Text = idProductAttributeBoxTPB.SelectedItem.ToString();
             }
         }
 
